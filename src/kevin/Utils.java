@@ -121,7 +121,48 @@ public class Utils {
 		return vm;
 	}
 
-	
+	public static Object getPrimitiveFromValue(Value val)
+	{
+		if (val instanceof StringReference)
+		{
+			return ((StringReference)val).value();
+		}
+		else if (val instanceof IntegerValue)
+		{
+			return ((IntegerValue)val).value();
+		}
+		else if (val instanceof ShortValue)
+		{
+			return ((ShortValue)val).value();
+		}
+		else if (val instanceof LongValue)
+		{
+			return ((LongValue)val).value();
+		}
+		else if (val instanceof BooleanValue)
+		{
+			return ((BooleanValue)val).value();
+		}
+		else if (val instanceof FloatValue)
+		{
+			return ((FloatValue)val).value();
+		}
+		else if (val instanceof DoubleValue)
+		{
+			return ((DoubleValue)val).value();
+		}
+		else if (val instanceof ByteValue)
+		{
+			return ((ByteValue)val).value();
+		}
+		else if (val instanceof CharValue)
+		{
+			return ((CharValue)val).value();	
+		}
+		else {
+			return null;
+		}
+	}
 	
 	public static String getValueAsString(Value val)
 	{

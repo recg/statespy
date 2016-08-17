@@ -19,6 +19,8 @@ import com.sun.jdi.event.EventSet;
 import com.sun.jdi.request.BreakpointRequest;
 import com.sun.jdi.request.EventRequest;
 
+import objectnodes.CapturedState;
+
 
 
 public class BreakpointEventHandler extends Thread {
@@ -122,9 +124,7 @@ public class BreakpointEventHandler extends Thread {
 			return; 
 					
 		
-		CapturedState capState = new CapturedState();
 		
-
 		System.out.println("=======================================================================");
 		System.out.println("================ Breakpoint at line " + bpReq.location().lineNumber() + "  (" + bpReq.location().method().name() + ") ================");
 
@@ -163,9 +163,12 @@ public class BreakpointEventHandler extends Thread {
 				continue;
 			}
 
-			System.out.println("       " + f.typeName() + "  " + f.name() + " = " + Utils.getValueAsString(currentThis.getValue(f)) + "\n             [in " + f.declaringType() + "]\n");
+			System.out.println("       " + (f.isStatic() ? "static " : "") + f.typeName() + "  " + f.name() + " = " + Utils.getValueAsString(currentThis.getValue(f)) + "\n             [in " + f.declaringType() + "]\n");
 
 		}
+		
+		CapturedState capState = new CapturedState(currentThis);
+		
 
 		if (be.type.equals(BreakpointType.ENTRY)) {
 			this.beginState = capState;
