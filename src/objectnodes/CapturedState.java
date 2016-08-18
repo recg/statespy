@@ -26,10 +26,10 @@ public class CapturedState {
 	VariableNode parentObject;
 	
 	/**
-	 * The fields already captured. Used to avoid infinite circular recursion,
+	 * The objects already captured. Used to avoid infinite recursion,
 	 * which happens when there are circular references 
 	 */
-	HashSet<Value> objectsCaptured = new HashSet<Value>();
+	HashMap<Value, VariableNode> objectToNodeMap = new HashMap<>();
 
 	
 	public CapturedState() { }
@@ -59,26 +59,36 @@ public class CapturedState {
         if (depth <= maxDepth) {
         	
         	// avoid circular references by stopping the chain here
-        	if (this.objectsCaptured.contains(obj))
-				return null;
-        	this.objectsCaptured.add(obj);
+        	VariableNode redundant = this.objectToNodeMap.get(obj);
+        	if (redundant != null)
+        		return redundant;
         	
         	
         	if (obj instanceof PrimitiveValue) {
-        		return new PrimitiveNode(fieldName, fieldType, (PrimitiveValue)obj, parent);
+        		PrimitiveNode node = new PrimitiveNode(fieldName, fieldType, (PrimitiveValue)obj, parent);
+        		this.objectToNodeMap.put(obj, node);
+        		return node;
         	}
         	else if (obj instanceof StringReference) {
-        		return new StringNode(fieldName, fieldType, (StringReference)obj, parent);
+        		StringNode node = new StringNode(fieldName, fieldType, (StringReference)obj, parent);
+        		this.objectToNodeMap.put(obj, node);
+        		return node;
         	}
         	else if (obj instanceof ArrayReference) {
-                return captureArray(fieldName, (ArrayReference)obj, parent, depth, maxDepth, includeInherited);
+        		ArrayReference arr = (ArrayReference)obj;
+                ArrayNode arrnode = new ArrayNode(fieldName, arr.type().toString(), arr, parent);
+                this.objectToNodeMap.put(arr, arrnode);
+            	for (int i = 0; i < arr.length(); i++) {
+                	arrnode.contents.add(captureState(arr.getValue(i), fieldName, arr.type().name(), arrnode, depth + 1, maxDepth, includeInherited));
+                }
+                return arrnode;
             } 
             else if (obj instanceof ObjectReference) { // must come after StringReference and ArrayReference
             	// here we have a normal class object
             	ObjectReference objectRef = (ObjectReference) obj;
             	
             	VariableNode varnode = new VariableNode(fieldName, objectRef.type().name(), objectRef, parent);
-
+            	this.objectToNodeMap.put(obj, varnode);
                 
                 // capture the fields of this object
                 List<Field> fields = objectRef.referenceType().fields(); // .allFields();  //includeInherited ? obj.referenceType().visibleFields() : obj.referenceType().fields();
@@ -101,25 +111,14 @@ public class CapturedState {
             		System.err.println("Unsupported Value type: " + obj.getClass() + ", runtime type = " + obj.type().name() + "\n");
             }
         }
+        else {
+        	// depth limit exceeded
+        	return null;
+        }
         return null;
     }
 
-
-    /**
-     * Get the fields of an array for insertion into a {@link JTree}.
-     *
-     * @param array the array reference
-     * @return list of array fields
-     */
-    protected VariableNode captureArray(String fieldName, ArrayReference arr, VariableNode parent, int depth, int maxDepth, boolean includeInherited) {
-        ArrayNode arrnode = new ArrayNode(fieldName, arr.type().toString(), arr, parent);
-    	for (int i = 0; i < arr.length(); i++) {
-        	arrnode.contents.add(captureState(arr.getValue(i), fieldName, arr.type().name(), arrnode, depth + 1, maxDepth, includeInherited));
-        }
-        return arrnode;
-    }
-	
-    
+   
 	@Override
 	public boolean equals(Object obj) {
 		
