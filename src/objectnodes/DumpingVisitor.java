@@ -1,16 +1,5 @@
 package objectnodes;
 
-import java.util.List;
-
-import javax.swing.tree.MutableTreeNode;
-
-import com.sun.jdi.ArrayReference;
-import com.sun.jdi.Field;
-import com.sun.jdi.ObjectReference;
-import com.sun.jdi.PrimitiveValue;
-import com.sun.jdi.StringReference;
-import com.sun.jdi.Value;
-
 public class DumpingVisitor extends TreeVisitorBase {
 
 	@Override
@@ -19,7 +8,7 @@ public class DumpingVisitor extends TreeVisitorBase {
 		for (int i = 0; i <= depth; i++) {
 			sb.append("  ");
 		}
-		sb.append(node.getTypeName() + "  " + node.getName() + " = " + node.getStringValue());
+		sb.append(node.getTypeString() + "  " + node.getName() + " = " + node.getValueAsString());
 		System.out.println(sb.toString());
 	}
 

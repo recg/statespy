@@ -24,6 +24,7 @@
 package objectnodes;
 
 import com.sun.jdi.ArrayReference;
+import com.sun.jdi.IntegerValue;
 import com.sun.jdi.ObjectReference;
 import com.sun.jdi.PrimitiveValue;
 import com.sun.jdi.StringReference;
@@ -89,68 +90,99 @@ public class VariableNode implements MutableTreeNode {
      *
      * @return a String representing the value.
      */
-    public String getStringValue() {
-        String str;
-        if (value != null) {
-            if (getType() == TYPE_OBJECT) {
-                str = "instance of " + type;
-            } else if (getType() == TYPE_ARRAY) {
-                //instance of int[5] (id=998) --> instance of int[5]
-                str = value.toString().substring(0, value.toString().lastIndexOf(" "));
-            } else if (getType() == TYPE_STRING) {
-                str = ((StringReference) value).value(); // use original string value (without quotes)
-            } else {
-                str = value.toString();
-            }
-        } else {
-            str = "null";
-        }
-        return str;
+    public String getValueAsString() {
+    	
+    	if (this.value instanceof PrimitiveValue) {
+    		return ((PrimitiveValue)this.value).toString();
+    	}
+    	
+    	if (this.value instanceof StringReference) {
+    		return ((StringReference)this.value).value();
+    	}
+    	
+    	if (this.value instanceof ArrayReference) {
+    		ArrayReference arrRef = (ArrayReference)this.value;
+    		if (this.getChildCount() != arrRef.length()) {
+    			System.err.println("childCount should equal arrRef length!!");
+    		}
+    		return this.type + "[" + this.getChildCount() + "]"; 
+    	}
+    	
+    	if (this.value instanceof ObjectReference) {
+    		return "instance of " + this.type;
+    	}
+    	
+    	
+//    	
+//        String str;
+//        if (value != null) {
+//            if (getType() == TYPE_OBJECT) {
+//                str = "instance of " + type;
+//            } else if (getType() == TYPE_ARRAY) {
+//                //instance of int[5] (id=998) --> instance of int[5]
+//            	try {
+//	                str = value.toString().substring(0, value.toString().lastIndexOf(" "));
+//            	} catch (StringIndexOutOfBoundsException ex) {
+//            		ex.printStackTrace();
+//            		return null;
+//            	}
+//            } else if (getType() == TYPE_STRING) {
+//                str = ((StringReference) value).value(); // use original string value (without quotes)
+//            } else {
+//                str = value.toString();
+//            }
+//        } else {
+//            str = "null";
+//        }
+        return "error getting value";
     }
 
-    public String getTypeName() {
+    public String getTypeString() {
         return type;
     }
 
-    public int getType() {
-        if (type == null) {
-            return TYPE_UNKNOWN;
-        }
-        if (type.endsWith("[]")) {
-            return TYPE_ARRAY;
-        }
-        if (type.equals("int")) {
-            return TYPE_INTEGER;
-        }
-        if (type.equals("long")) {
-            return TYPE_LONG;
-        }
-        if (type.equals("byte")) {
-            return TYPE_BYTE;
-        }
-        if (type.equals("short")) {
-            return TYPE_SHORT;
-        }
-        if (type.equals("float")) {
-            return TYPE_FLOAT;
-        }
-        if (type.equals("double")) {
-            return TYPE_DOUBLE;
-        }
-        if (type.equals("char")) {
-            return TYPE_CHAR;
-        }
-        if (type.equals("java.lang.String")) {
-            return TYPE_STRING;
-        }
-        if (type.equals("boolean")) {
-            return TYPE_BOOLEAN;
-        }
-        if (type.equals("void")) {
-            return TYPE_VOID; //TODO: check if this is correct
-        }
-        return TYPE_OBJECT;
-    }
+//    public int getType() {
+//    	if (type == null) {
+//    		return TYPE_UNKNOWN;
+//    	}
+//    	if (this.value instanceof ArrayReference) {
+//    		return TYPE_ARRAY;
+//    	}
+//    	if (this.value instanceof StringReference) {
+//    		return TYPE_STRING;
+//    	}
+//    	if (this.value instanceof IntegerValue) {
+//    		return TYPE_INTEGER;
+//    	}
+//        if (type.equals("long")) {
+//            return TYPE_LONG;
+//        }
+//        if (type.equals("byte")) {
+//            return TYPE_BYTE;
+//        }
+//        if (type.equals("short")) {
+//            return TYPE_SHORT;
+//        }
+//        if (type.equals("float")) {
+//            return TYPE_FLOAT;
+//        }
+//        if (type.equals("double")) {
+//            return TYPE_DOUBLE;
+//        }
+//        if (type.equals("char")) {
+//            return TYPE_CHAR;
+//        }
+//        if (type.equals("java.lang.String")) {
+//            return TYPE_STRING;
+//        }
+//        if (type.equals("boolean")) {
+//            return TYPE_BOOLEAN;
+//        }
+//        if (type.equals("void")) {
+//            return TYPE_VOID; //TODO: check if this is correct
+//        }
+//        return TYPE_OBJECT;
+//    }
 
     public String getName() {
         return name;
@@ -259,7 +291,7 @@ public class VariableNode implements MutableTreeNode {
             str += type + " ";
         }
         str += name;
-        str += " = " + getStringValue();
+        str += " = " + getValueAsString();
         return str;
     }
 

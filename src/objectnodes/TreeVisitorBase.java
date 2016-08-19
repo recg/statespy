@@ -44,10 +44,9 @@ public class TreeVisitorBase {
 			}
 			else if ((node instanceof ArrayNode) || (node instanceof VariableNode)) {
 				this.nodesVisited.add(node);
-				ArrayNode arrnode = (ArrayNode)node;
-				takeActionAtNode(arrnode, depth);
-				for (int i = 0; i < arrnode.getChildCount(); i++) {
-					visitNode((VariableNode)arrnode.getChildAt(i), arrnode, depth + 1, maxDepth);
+				takeActionAtNode(node, depth);
+				for (int i = 0; i < node.getChildCount(); i++) {
+					visitNode((VariableNode)(node.getChildAt(i)), node, depth + 1, maxDepth);
 				}
 				return;
 			} 
