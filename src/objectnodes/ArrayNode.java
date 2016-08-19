@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 public class ArrayNode extends VariableNode {
 
     protected ArrayReference arrayObj;
-    protected ArrayList<VariableNode> contents; 
 
     /**
      * Construct an {@link ArrayNode}.
@@ -30,8 +29,6 @@ public class ArrayNode extends VariableNode {
     public ArrayNode(String name, String type, ArrayReference arr, VariableNode parent) {
         super(name, type, arr, parent);
         this.arrayObj = arr;
-        this.contents = new ArrayList<VariableNode>();
-        this.children = null;
        }
 
 }

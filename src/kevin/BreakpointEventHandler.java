@@ -168,7 +168,7 @@ public class BreakpointEventHandler extends Thread {
 		}
 		
 		CapturedState capState = new CapturedState(currentThis);
-		
+		capState.dump();
 
 		if (be.type.equals(BreakpointType.ENTRY)) {
 			this.beginState = capState;

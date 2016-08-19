@@ -21,9 +21,9 @@ import com.sun.jdi.Value;
 public class CapturedState {
 
 	/**
-	 * the top-level parent object contained within this CapturedState. 
+	 * the top-level root object of the tree contained within this CapturedState. 
 	 */
-	VariableNode parentObject;
+	VariableNode rootObject;
 	
 	/**
 	 * The objects already captured. Used to avoid infinite recursion,
@@ -41,7 +41,7 @@ public class CapturedState {
 
 	
 	public void captureObjectState(Value object) {
-		parentObject = captureState(object, "top_level", object.type().name(), null, 0, 5, true);
+		rootObject = captureState(object, "top_level", object.type().name(), null, 0, 5, true);
 	}
 	
 	
@@ -79,7 +79,7 @@ public class CapturedState {
                 ArrayNode arrnode = new ArrayNode(fieldName, arr.type().toString(), arr, parent);
                 this.objectToNodeMap.put(arr, arrnode);
             	for (int i = 0; i < arr.length(); i++) {
-                	arrnode.contents.add(captureState(arr.getValue(i), fieldName, arr.type().name(), arrnode, depth + 1, maxDepth, includeInherited));
+                	arrnode.addChild(captureState(arr.getValue(i), fieldName, arr.type().name(), arrnode, depth + 1, maxDepth, includeInherited));
                 }
                 return arrnode;
             } 
@@ -119,6 +119,14 @@ public class CapturedState {
     }
 
    
+    
+    public void dump() {
+    	DumpingVisitor dumper = new DumpingVisitor();
+    	dumper.visitTree(this.rootObject);
+    }
+    
+    
+    
 	@Override
 	public boolean equals(Object obj) {
 		

@@ -25,6 +25,7 @@ package objectnodes;
 
 import com.sun.jdi.ArrayReference;
 import com.sun.jdi.ObjectReference;
+import com.sun.jdi.PrimitiveValue;
 import com.sun.jdi.StringReference;
 import com.sun.jdi.Value;
 import java.util.ArrayList;
@@ -208,23 +209,17 @@ public class VariableNode implements MutableTreeNode {
         }
 
         // handle strings
-        if (getType() == TYPE_STRING) {
+        if ((value instanceof StringReference) || 
+        	(value instanceof PrimitiveValue)) {
             return false;
         }
-
-        // handle arrays
-        if (getType() == TYPE_ARRAY) {
-            ArrayReference array = (ArrayReference) value;
-            return array.length() > 0;
-        }
-        // handle objects
-        if (getType() == TYPE_OBJECT) { // this also rules out null
-            // check if this object has any fields
-            ObjectReference obj = (ObjectReference) value;
-            return !obj.referenceType().visibleFields().isEmpty();
+        
+        if ((value instanceof ArrayReference) || 
+        	(value instanceof ObjectReference)) {
+        	return true;
         }
 
-        return false;
+       return true; // default: don't disable children unnecessarily
     }
 
     /**
@@ -234,8 +229,7 @@ public class VariableNode implements MutableTreeNode {
      */
     @Override
     public boolean isLeaf() {
-        //return children.size() == 0;
-        return !getAllowsChildren();
+        return children.size() == 0;
     }
 
     @Override
@@ -363,4 +357,5 @@ public class VariableNode implements MutableTreeNode {
 //        hash = 97 * hash + (this.parent != null ? this.parent.hashCode() : 0);
         return hash;
     }
+
 }
