@@ -159,7 +159,7 @@ public class BreakpointEventHandler extends Thread {
 		for (Field f : ref.allFields())
 		{
 			// ignore unmodifiable variables
-			if (f.isEnumConstant() || f.isFinal() || f.name().equals("shadow$_klass_") || f.name().equals("shadow$_monitor_")) {
+			if (Utils.shouldExcludeField(f)) {
 				continue;
 			}
 

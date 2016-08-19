@@ -16,7 +16,7 @@ public class TreeVisitorBase {
 	private HashSet<VariableNode> nodesVisited = new HashSet<VariableNode>();
 
 	public void visitTree(VariableNode root) {
-		visitNode(root, null, 0, 5);
+		visitNode(root, null, 0, 1);
 	}
 
 	/**

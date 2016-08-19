@@ -97,7 +97,7 @@ public class VariableNode implements MutableTreeNode {
     	}
     	
     	if (this.value instanceof StringReference) {
-    		return ((StringReference)this.value).value();
+    		return "\"" + ((StringReference)this.value).value() + "\"";
     	}
     	
     	if (this.value instanceof ArrayReference) {

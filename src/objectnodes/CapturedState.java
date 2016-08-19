@@ -18,6 +18,8 @@ import com.sun.jdi.StringReference;
 import com.sun.jdi.ThreadReference;
 import com.sun.jdi.Value;
 
+import kevin.Utils;
+
 public class CapturedState {
 
 	/**
@@ -41,7 +43,7 @@ public class CapturedState {
 
 	
 	public void captureObjectState(Value object) {
-		rootObject = captureState(object, "top_level", object.type().name(), null, 0, 5, true);
+		rootObject = captureState(object, "top_level", object.type().name(), null, 0, 10, true);
 	}
 	
 	
@@ -93,7 +95,7 @@ public class CapturedState {
                 // capture the fields of this object
                 List<Field> fields = objectRef.referenceType().fields(); // .allFields();  //includeInherited ? obj.referenceType().visibleFields() : obj.referenceType().fields();
                 for (Field field : fields) {
-                	if (shouldExcludeField(field)) {
+                	if (Utils.shouldExcludeField(field)) {
                 		continue;
                 	}
                 	
@@ -165,22 +167,6 @@ public class CapturedState {
 		}
 		
 		return true;
-	}
-	
-
-	private boolean shouldExcludeField(Field f) {
-		// ignore unmodifiable variables
-		try {
-			return (f.isEnumConstant() || 
-					(f.isFinal() && (f.type() instanceof PrimitiveType)) || //only ignore final primitives, not final Objects (a final arraylist can still be modified)  
-					f.name().equals("shadow$_klass_") || 
-					f.name().equals("shadow$_monitor_")
-					);
-		} catch (ClassNotLoadedException e) {
-			e.printStackTrace();
-		}
-		
-		return false;
 	}
 	
 }

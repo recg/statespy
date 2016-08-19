@@ -11,11 +11,14 @@ import com.sun.jdi.BooleanValue;
 import com.sun.jdi.Bootstrap;
 import com.sun.jdi.ByteValue;
 import com.sun.jdi.CharValue;
+import com.sun.jdi.ClassNotLoadedException;
 import com.sun.jdi.DoubleValue;
+import com.sun.jdi.Field;
 import com.sun.jdi.FloatValue;
 import com.sun.jdi.IntegerValue;
 import com.sun.jdi.LongValue;
 import com.sun.jdi.Method;
+import com.sun.jdi.PrimitiveType;
 import com.sun.jdi.ReferenceType;
 import com.sun.jdi.ShortValue;
 import com.sun.jdi.StringReference;
@@ -28,6 +31,30 @@ import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 
 public class Utils {
 
+	/**
+	 * Currently, this function will return true if the field is:
+	 * <li> an enumeration constant
+	 * <li> a final primitive or final string
+	 * <li> the shadow fields: shadow$_klass and shadow$_monitor
+	 * @param f
+	 * @return
+	 */
+	public static boolean shouldExcludeField(Field f) {
+		// ignore unmodifiable variables
+		try {
+			return (f.isEnumConstant() || 
+				   (f.isFinal() && (f.typeName().equals("java.lang.String") || (f.type() instanceof PrimitiveType))) || //only ignore final primitives, not final Objects (a final arraylist can still be modified)  
+					f.name().equals("shadow$_klass_") || 
+					f.name().equals("shadow$_monitor_")
+					);
+		} catch (ClassNotLoadedException e) {
+//			e.printStackTrace();
+			System.err.println(e.toString() + ". " + e.getMessage());
+		}
+		
+		return false;
+	}
+	
 	
 	public static String runShellCommand(String cmd) {
 		try {
@@ -55,7 +82,8 @@ public class Utils {
 			e.printStackTrace();
 			return null;
 		}
-	}
+	}	
+	
 
 	/**
 	 * @return the PID of the first JDWP-enabled process on the 
