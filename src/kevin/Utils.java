@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.sun.jdi.AbsentInformationException;
 import com.sun.jdi.BooleanValue;
 import com.sun.jdi.Bootstrap;
 import com.sun.jdi.ByteValue;
@@ -16,6 +17,7 @@ import com.sun.jdi.DoubleValue;
 import com.sun.jdi.Field;
 import com.sun.jdi.FloatValue;
 import com.sun.jdi.IntegerValue;
+import com.sun.jdi.Location;
 import com.sun.jdi.LongValue;
 import com.sun.jdi.Method;
 import com.sun.jdi.PrimitiveType;
@@ -53,6 +55,27 @@ public class Utils {
 		}
 		
 		return false;
+	}
+	
+	
+	/**
+	 * @param m the method to find the end of.
+	 * @return the {@link Location} of the last line in Method m
+	 * @throws AbsentInformationException 
+	 */
+	public static Location getEndOfMethodLocation(Method m) throws AbsentInformationException {
+		// find last line of the method
+		List<Location> mthdLocations = m.allLineLocations(); // this is not sorted by default
+		Location endOfMethod = m.location(); // start at beg of method
+		int maxLineNumber = 0;
+		for (Location l : mthdLocations) {
+			if (l.lineNumber() > maxLineNumber) {
+				maxLineNumber = l.lineNumber();
+				endOfMethod = l;
+			}
+		}
+		
+		return endOfMethod;
 	}
 	
 	

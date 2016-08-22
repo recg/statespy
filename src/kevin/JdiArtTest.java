@@ -92,7 +92,7 @@ public class JdiArtTest {
 		VirtualMachine vm = Utils.connectToDebuggeeJVM(chosenTcpPort);
 
 
-//		dumpAllClasses();
+		//dumpAllClasses();
 		
 		BreakpointEventHandler bkptHandler = new BreakpointEventHandler(vm);
 		
@@ -101,19 +101,8 @@ public class JdiArtTest {
 		ReferenceType classRef = vm.classesByName(className).get(0);
 		Method mthd = classRef.methodsByName(methodName).get(0);
 		
-		// find last line of the method
-		List<Location> mthdLocations = mthd.allLineLocations(); // this is not sorted by default
-		Location endOfMethod = mthd.location(); // start at beg of method
-		int maxLineNumber = 0;
-		for (Location l : mthdLocations) {
-			if (l.lineNumber() > maxLineNumber) {
-				maxLineNumber = l.lineNumber();
-				endOfMethod = l;
-			}
-		}
-		
-		bkptHandler.addBreakpoint(mthd.location(), BreakpointType.ENTRY, true);
-		bkptHandler.addBreakpoint(endOfMethod, BreakpointType.EXIT, true);
+		bkptHandler.addBreakpointAtMethod(mthd, BreakpointType.ENTRY, true);
+		bkptHandler.addBreakpointAtMethod(mthd, BreakpointType.EXIT, true);
 		
 		bkptHandler.start();
 		

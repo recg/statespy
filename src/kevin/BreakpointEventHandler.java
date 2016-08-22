@@ -1,11 +1,13 @@
 package kevin;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.sun.jdi.AbsentInformationException;
 import com.sun.jdi.Field;
 import com.sun.jdi.IncompatibleThreadStateException;
 import com.sun.jdi.Location;
+import com.sun.jdi.Method;
 import com.sun.jdi.ObjectReference;
 import com.sun.jdi.ReferenceType;
 import com.sun.jdi.StackFrame;
@@ -17,7 +19,6 @@ import com.sun.jdi.event.EventIterator;
 import com.sun.jdi.event.EventQueue;
 import com.sun.jdi.event.EventSet;
 import com.sun.jdi.request.BreakpointRequest;
-import com.sun.jdi.request.EventRequest;
 
 import objectnodes.CapturedState;
 
@@ -25,39 +26,44 @@ import objectnodes.CapturedState;
 
 public class BreakpointEventHandler extends Thread {
 
-	static class BreakpointEntry {
-		BreakpointRequest bReq;
-		BreakpointType type;
-		public BreakpointEntry(BreakpointRequest b, BreakpointType t) {
-			this.bReq = b;
-			this.type = t;
-		}
-	}
-
-
-	ArrayList<BreakpointEntry> breakpoints;
+	ArrayList<BreakpointEntry> breakpoints = new ArrayList<BreakpointEntry>();
 	private VirtualMachine vm;
 	private boolean connected = true; // are we connected to the vm?
+	
+	ArrayList<CapturedState> capturedStates = new ArrayList<>();
 	CapturedState beginState, endState;
 
 
 	public BreakpointEventHandler(VirtualMachine vm) { 
 		this.vm = vm;
-		this.breakpoints = new ArrayList<BreakpointEntry>();
 	}
 
 	/**
 	 * 
 	 * @param loc the source code location to set the breakpoint at
 	 * @param type BreakpointType, entry or exit
+	 * @throws AbsentInformationException 
 	 */
-	public void addBreakpoint(Location loc, BreakpointType type, boolean enable) {
+	public void addBreakpointAtMethod(Method m, BreakpointType type, boolean enable) throws AbsentInformationException {
+		
+		Location loc = null;
+		if (type.equals(BreakpointType.ENTRY)) {
+			loc = m.location();
+		}
+		else if (type.equals(BreakpointType.EXIT)) {
+			loc = Utils.getEndOfMethodLocation(m);
+		}
+		else {
+			System.err.println("addBreakpoint(): Unsupported BreakpointType = " + type);
+			return;
+		}
+				
 		BreakpointRequest b = vm.eventRequestManager().createBreakpointRequest(loc);
 		b.setSuspendPolicy(BreakpointRequest.SUSPEND_ALL);
 		if (enable) {
 			b.enable();
 		}
-		this.breakpoints.add(new BreakpointEntry(b, type));
+		this.breakpoints.add(new BreakpointEntry(b, type, m));
 	}
 
 
@@ -109,7 +115,7 @@ public class BreakpointEventHandler extends Thread {
 	}
 
 
-	public void handleBreakpointEvent(BreakpointEvent evt) throws IncompatibleThreadStateException {
+	private void handleBreakpointEvent(BreakpointEvent evt) throws IncompatibleThreadStateException {
 		BreakpointRequest bpReq = (BreakpointRequest)evt.request();
 	
 		// ensure that this breakpoint is one we actually care about and have registered
@@ -167,18 +173,12 @@ public class BreakpointEventHandler extends Thread {
 
 		}
 		
-		CapturedState capState = new CapturedState(currentThis);
+		CapturedState capState = new CapturedState(threadRef, currentThis, be);
+		this.capturedStates.add(capState);	
 		capState.dump();
 
-		if (be.type.equals(BreakpointType.ENTRY)) {
-			this.beginState = capState;
-		}
-		else if (be.type.equals(BreakpointType.EXIT)) {
-			this.endState = capState;
-		}
-				
-
 		if (be.type.equals(BreakpointType.EXIT)) {
+			CapturedState beginState = findMatchingBeginState(capState);
 			compareStates(beginState, endState);
 		}
 
@@ -214,6 +214,30 @@ public class BreakpointEventHandler extends Thread {
 
 
 	}
+	
+	
+	/**
+	 * returns the beginning state (at method entry) that matches the given endState
+	 * @param endState the ending state (at method exit) to match
+	 * @return
+	 */
+	private CapturedState findMatchingBeginState(CapturedState endState) {
+		// start from the end of the list to find the most recent matching one first
+		for (int i = this.capturedStates.size() - 1; i >= 0; i--) 
+		{
+			CapturedState curr = this.capturedStates.get(i);
+			if (endState.getMethod().equals(curr.getMethod()) &&
+				endState.getThreadRef().equals(curr.getThreadRef()) && 
+				endState.getType().equals(curr.getType()))
+			{
+				return curr;
+			}
+		}
+		
+		System.err.println("Couldn't find a matching beginState for endState = " + endState);
+		return null;
+	}
+	
 	
 	
 	public void compareStates(CapturedState beg, CapturedState end) {

@@ -1,23 +1,21 @@
 package objectnodes;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+
+import javax.swing.JTree;
 
 import com.sun.jdi.ArrayReference;
-import com.sun.jdi.ClassNotLoadedException;
 import com.sun.jdi.Field;
-import com.sun.jdi.IncompatibleThreadStateException;
+import com.sun.jdi.Method;
 import com.sun.jdi.ObjectReference;
-import com.sun.jdi.PrimitiveType;
 import com.sun.jdi.PrimitiveValue;
-import com.sun.jdi.StackFrame;
 import com.sun.jdi.StringReference;
 import com.sun.jdi.ThreadReference;
 import com.sun.jdi.Value;
 
+import kevin.BreakpointEntry;
+import kevin.BreakpointType;
 import kevin.Utils;
 
 public class CapturedState {
@@ -29,17 +27,37 @@ public class CapturedState {
 	
 	/**
 	 * The objects already captured. Used to avoid infinite recursion,
-	 * which happens when there are circular references 
+	 * which happens when there are circular references. 
 	 */
 	HashMap<Value, VariableNode> objectToNodeMap = new HashMap<>();
+	
+	/**
+	 * A reference to the thread that was running when this state was captured. 
+	 */
+	ThreadReference threadRef;
+	
+	/**
+	 * The BreakpointEntry corresponding to when this state was captured, including 
+	 * <li> the method that was currently executing when this state was captured.
+	 *      (this capturedState was captured while inside this method),
+	 * <li> The BreakpointType at which this state was captured, 
+	 *      e.g., whether this capturedState object was captured at a method's entry or exit.   
+	 */
+	BreakpointEntry entry;
+
 
 	
-	public CapturedState() { }
-	
-	public CapturedState(ObjectReference obj) {
-		this();
-		captureObjectState(obj);
+	public CapturedState(ThreadReference thr, ObjectReference obj, Method m, BreakpointType t) {
+		
 	}
+	
+	public CapturedState(ThreadReference thr, ObjectReference obj, BreakpointEntry e) {
+		this.threadRef = thr;
+		this.entry = e;
+		
+		captureObjectState(obj);	
+	}
+	
 
 	
 	public void captureObjectState(Value object) {
@@ -169,5 +187,18 @@ public class CapturedState {
 		return true;
 	}
 	
+	
+	
+	public ThreadReference getThreadRef() {
+		return threadRef;
+	}
+	
+	public Method getMethod() {
+		return entry.mthd;
+	}
+
+	public BreakpointType getType() {
+		return entry.type;
+	}
 }
 
