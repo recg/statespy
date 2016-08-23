@@ -36,6 +36,10 @@ import java.util.List;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 
+import org.javers.core.metamodel.annotation.DiffIgnore;
+import org.javers.core.metamodel.annotation.Id;
+import org.javers.core.metamodel.annotation.ValueObject;
+
 /**
  * Model for a variable in the variable inspector. Has a type and name and
  * optionally a value. Can have sub-variables (as is the case for objects, and
@@ -44,7 +48,7 @@ import javax.swing.tree.TreeNode;
  * @author Martin Leopold <m@martinleopold.com>
  */
 public class VariableNode implements MutableTreeNode {
-
+	
     public static final int TYPE_UNKNOWN = -1;
     public static final int TYPE_OBJECT = 0;
     public static final int TYPE_ARRAY = 1;
@@ -58,11 +62,14 @@ public class VariableNode implements MutableTreeNode {
     public static final int TYPE_BYTE = 9;
     public static final int TYPE_SHORT = 10;
     public static final int TYPE_VOID = 11;
+    
+    
     protected String type;
     protected String name;
+
     protected Value value;
-    protected List<MutableTreeNode> children = new ArrayList();
-    protected MutableTreeNode parent;
+    protected List<VariableNode> children = new ArrayList();
+    protected VariableNode parent;
 
     /**
      * Construct a {@link VariableNode}.
@@ -318,8 +325,8 @@ public class VariableNode implements MutableTreeNode {
      * Remove all children from this {@link VariableNode}.
      */
     public void removeAllChildren() {
-        for (MutableTreeNode mtn : children) {
-            mtn.setParent(null);
+        for (VariableNode vn : children) {
+            vn.setParent(null);
         }
         children.clear();
     }
@@ -339,7 +346,16 @@ public class VariableNode implements MutableTreeNode {
 
     @Override
     public void setParent(MutableTreeNode mtn) {
-        parent = mtn;
+        if (mtn instanceof VariableNode) {
+        	parent = (VariableNode)mtn;
+        }
+        else {
+        	System.err.println("Error: tried to setParent of this=" + this + " to parent mtn=" + mtn);
+        }
+    }
+    
+    public List<VariableNode> getChildren() {
+    	return children;
     }
 
     /**

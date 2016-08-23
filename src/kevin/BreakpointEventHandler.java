@@ -1,7 +1,13 @@
 package kevin;
 
 import java.util.ArrayList;
-import java.util.List;
+
+import javax.swing.tree.MutableTreeNode;
+
+import org.javers.core.Javers;
+import org.javers.core.JaversBuilder;
+import org.javers.core.diff.Diff;
+import org.javers.core.diff.ListCompareAlgorithm;
 
 import com.sun.jdi.AbsentInformationException;
 import com.sun.jdi.Field;
@@ -21,6 +27,7 @@ import com.sun.jdi.event.EventSet;
 import com.sun.jdi.request.BreakpointRequest;
 
 import objectnodes.CapturedState;
+import objectnodes.VariableNode;
 
 
 
@@ -31,7 +38,6 @@ public class BreakpointEventHandler extends Thread {
 	private boolean connected = true; // are we connected to the vm?
 	
 	ArrayList<CapturedState> capturedStates = new ArrayList<>();
-	CapturedState beginState, endState;
 
 
 	public BreakpointEventHandler(VirtualMachine vm) { 
@@ -131,9 +137,10 @@ public class BreakpointEventHandler extends Thread {
 					
 		
 		
+		System.out.println("\n=======================================================================");
+		System.out.println("============ " + be.type + " Breakpoint at line " + bpReq.location().lineNumber() + "  (" + bpReq.location().method().name() + ") ================");
 		System.out.println("=======================================================================");
-		System.out.println("================ Breakpoint at line " + bpReq.location().lineNumber() + "  (" + bpReq.location().method().name() + ") ================");
-
+		
 		ThreadReference threadRef = evt.thread();
 		StackFrame stackFrame = threadRef.frame(0);
 		ObjectReference currentThis = stackFrame.thisObject(); // dynamic reference to "this" current instance object
@@ -179,12 +186,11 @@ public class BreakpointEventHandler extends Thread {
 
 		if (be.type.equals(BreakpointType.EXIT)) {
 			CapturedState beginState = findMatchingBeginState(capState);
-			compareStates(beginState, endState);
+			compareStates(beginState, capState);
 		}
 
-		//TODO:  write routine to capture/save the state of a class object, which recursively iterates through all of the subobjects 
-		// TODO:  use that routine to capture the state of a whole service, which may span multiple methods that touch different objects. 
-		//        all of those objects should be included\
+		// TODO:  could potentially capture the state of a whole service that may span multiple methods that touch different objects. 
+		//        all of those objects should be included
 		// TODO: so, given a starting point "a" below, we should capture "a", "b", and "c" states as the before states, and then c', b', and a' as the after states.
 		//		 we should be able to tell when entering and exiting a method, hopefully don't have to step through individual statements, that will kill performance
 		/*
@@ -200,7 +206,6 @@ public class BreakpointEventHandler extends Thread {
 		 *   /  
 		 *  a'
 		 */
-		// TODO: next, once all the states are captured, we need to write comparison routines for states. It seems like the .equals() methods work as we want them to.
 
 
 
@@ -212,8 +217,8 @@ public class BreakpointEventHandler extends Thread {
 		//				System.out.print(visibleVar.name() + " = " + Utils.getValueAsString(val));	
 		//			}
 
-
 	}
+	
 	
 	
 	/**
@@ -226,9 +231,9 @@ public class BreakpointEventHandler extends Thread {
 		for (int i = this.capturedStates.size() - 1; i >= 0; i--) 
 		{
 			CapturedState curr = this.capturedStates.get(i);
-			if (endState.getMethod().equals(curr.getMethod()) &&
-				endState.getThreadRef().equals(curr.getThreadRef()) && 
-				endState.getType().equals(curr.getType()))
+			if (curr.getMethod().equals(endState.getMethod()) &&
+				curr.getThreadRef().equals(endState.getThreadRef()) && 
+				curr.getType().equals(BreakpointType.ENTRY))
 			{
 				return curr;
 			}
@@ -238,9 +243,22 @@ public class BreakpointEventHandler extends Thread {
 		return null;
 	}
 	
-	
-	
+
 	public void compareStates(CapturedState beg, CapturedState end) {
-		// TODO write this state comparison routine
+		
 	}
+	
+	
+	
+	
+//	public void compareStates(CapturedState beg, CapturedState end) {
+//		// let's test jaVers here
+//		Javers javers = JaversBuilder.javers()
+//				.registerValue(com.sun.jdi.Value.class)
+//		        .withListCompareAlgorithm(ListCompareAlgorithm.LEVENSHTEIN_DISTANCE)
+//		        .build();
+//		
+//		Diff diff = javers.compareCollections(beg.getRootObject().getChildren(), end.getRootObject().getChildren(), VariableNode.class);
+//		System.out.println(diff.prettyPrint());
+//	}
 }

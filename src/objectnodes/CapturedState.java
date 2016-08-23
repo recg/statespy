@@ -188,6 +188,9 @@ public class CapturedState {
 	}
 	
 	
+	public VariableNode getRootObject() {
+		return this.rootObject;
+	}
 	
 	public ThreadReference getThreadRef() {
 		return threadRef;

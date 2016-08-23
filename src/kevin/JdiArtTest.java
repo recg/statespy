@@ -7,6 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.javers.core.Javers;
+import org.javers.core.JaversBuilder;
+import org.javers.core.diff.Diff;
+
 import com.sun.jdi.BooleanValue;
 import com.sun.jdi.Bootstrap;
 import com.sun.jdi.ByteValue;
@@ -37,6 +41,8 @@ import com.sun.jdi.event.EventQueue;
 import com.sun.jdi.event.EventSet;
 import com.sun.jdi.request.BreakpointRequest;
 import com.sun.jdi.request.EventRequest;
+
+import objectnodes.VariableNode;
 
 
 
@@ -73,45 +79,47 @@ import com.sun.jdi.request.EventRequest;
  */
 public class JdiArtTest {
 
-	
+
 	private static void getBinderCaller()
 	{
-		
+
 	}
 
+//	public static void main(String[] args) throws Exception
+//	{
+//		VariableNode node1 = new VariableNode("me", "t", null, null);
+//		VariableNode node2 = new VariableNode("me", "to", null, null);
+//		Javers javers = JaversBuilder.javers().build();
+//
+//		Diff diff = javers.compare(node1, node2);
+//		System.out.println(diff.prettyPrint());
+//	}
 
-	public static void main(String[] args) throws Exception
-	{
-		boolean firstPid = true; // true selects the system service
-		int chosenTcpPort = 8888;
-
-		ArrayList<Integer> pids = Utils.getJdwpPids();
-		int chosenPid = firstPid ? pids.get(0) : pids.get(pids.size() - 1);
-
-		Utils.forwardAdbPort(chosenTcpPort, chosenPid);
-		VirtualMachine vm = Utils.connectToDebuggeeJVM(chosenTcpPort);
-
-
-		//dumpAllClasses();
-		
-		BreakpointEventHandler bkptHandler = new BreakpointEventHandler(vm);
-		
-		String className = "com.android.server.AlarmManagerService";
-		String methodName = "setImpl";
-		ReferenceType classRef = vm.classesByName(className).get(0);
-		Method mthd = classRef.methodsByName(methodName).get(0);
-		
-		bkptHandler.addBreakpointAtMethod(mthd, BreakpointType.ENTRY, true);
-		bkptHandler.addBreakpointAtMethod(mthd, BreakpointType.EXIT, true);
-		
-		bkptHandler.start();
-		
-
-
-
-
-
-
-
-	}	
+		public static void main(String[] args) throws Exception
+		{
+			boolean firstPid = true; // true selects the system service
+			int chosenTcpPort = 8888;
+	
+			ArrayList<Integer> pids = Utils.getJdwpPids();
+			int chosenPid = firstPid ? pids.get(0) : pids.get(pids.size() - 1);
+	
+			Utils.forwardAdbPort(chosenTcpPort, chosenPid);
+			VirtualMachine vm = Utils.connectToDebuggeeJVM(chosenTcpPort);
+	
+	
+			//dumpAllClasses();
+			
+			BreakpointEventHandler bkptHandler = new BreakpointEventHandler(vm);
+			
+			String className = "com.android.server.AlarmManagerService";
+			String methodName = "setImpl";
+			ReferenceType classRef = vm.classesByName(className).get(0);
+			Method mthd = classRef.methodsByName(methodName).get(0);
+			
+			bkptHandler.addBreakpointAtMethod(mthd, BreakpointType.ENTRY, true);
+			bkptHandler.addBreakpointAtMethod(mthd, BreakpointType.EXIT, true);
+			
+			bkptHandler.start();
+			
+		}	
 }
