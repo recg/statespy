@@ -112,9 +112,6 @@ public class VariableNode implements MutableTreeNode {
 
 		if (this.value instanceof ArrayReference) {
 			ArrayReference arrRef = (ArrayReference) this.value;
-			if (this.getChildCount() != arrRef.length()) {
-				System.err.println("childCount(" + this.getChildCount() + ") should equal arrRef length (" + arrRef.length() + ")!!");
-			}
 			return this.type + "[" + this.getChildCount() + "]";
 		}
 

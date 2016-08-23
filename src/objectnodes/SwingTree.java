@@ -15,6 +15,9 @@ import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 
 
+// a good JTree resource: http://www.informit.com/articles/article.aspx?p=26327&seqNum=13
+// simple example: http://docstore.mik.ua/orelly/java-ent/jfc/ch03_19.htm
+
 public class SwingTree extends JFrame {
 	
 	JTree tree;
