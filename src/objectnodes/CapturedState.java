@@ -47,10 +47,6 @@ public class CapturedState {
 
 
 	
-	public CapturedState(ThreadReference thr, ObjectReference obj, Method m, BreakpointType t) {
-		
-	}
-	
 	public CapturedState(ThreadReference thr, ObjectReference obj, BreakpointEntry e) {
 		this.threadRef = thr;
 		this.entry = e;
@@ -61,37 +57,41 @@ public class CapturedState {
 
 	
 	public void captureObjectState(Value object) {
-		rootObject = captureState(object, "top_level", object.type().name(), null, 0, 10, true);
+		rootObject = captureState(object, "this (top-level)", object.type().name(), null, 0, 5, true);
 	}
 	
 	
-    /**
-     * Recursively get the fields of a {@link Value} for insertion into a
-     * {@link JTree}.
-     *
-     * @param value must be an instance of {@link ObjectReference}
-     * @param depth the current depth
-     * @param maxDepth the depth to stop at (inclusive)
-     * @return list of child fields of the given value
-     */
-    private VariableNode captureState(Value obj, String fieldName, String fieldType, VariableNode parent, int depth, int maxDepth, boolean includeInherited) {
+
+	/**
+	 * 
+	 * @param obj
+	 * @param fieldName
+	 * @param fieldType
+	 * @param parent
+	 * @param depth
+	 * @param maxDepth
+	 * @param includeInherited
+	 * @return
+	 */
+	private VariableNode captureState(Value obj, String fieldName, String fieldType, VariableNode parent, int depth, int maxDepth, boolean includeInherited) {
         
         if (depth <= maxDepth) {
-        	
-        	// avoid circular references by stopping the chain here
-        	VariableNode redundant = this.objectToNodeMap.get(obj);
-        	if (redundant != null)
-        		return redundant;
+
+        	// detect circular references for non-leaf (non primitive/string) types
+        	if (!(obj instanceof PrimitiveValue || obj instanceof StringReference)) {
+        		VariableNode redundant = this.objectToNodeMap.get(obj);
+        		if (redundant != null) {
+        			return redundant;
+        		}
+        	}
         	
         	
         	if (obj instanceof PrimitiveValue) {
         		PrimitiveNode node = new PrimitiveNode(fieldName, fieldType, (PrimitiveValue)obj, parent);
-        		this.objectToNodeMap.put(obj, node);
         		return node;
         	}
         	else if (obj instanceof StringReference) {
         		StringNode node = new StringNode(fieldName, fieldType, (StringReference)obj, parent);
-        		this.objectToNodeMap.put(obj, node);
         		return node;
         	}
         	else if (obj instanceof ArrayReference) {
@@ -145,6 +145,10 @@ public class CapturedState {
     	dumper.visitTree(this.rootObject);
     }
     
+    
+    public void visualize() {
+    	SwingTree treeView = new SwingTree(this.rootObject);
+    }
     
     
 	@Override

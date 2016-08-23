@@ -205,6 +205,8 @@ public class VariableNode implements MutableTreeNode {
      * @param c the {@link VariableNode} to add.
      */
     public void addChild(VariableNode c) {
+    	if (children == null)
+    		throw new NullPointerException("trying to add child " + c + " to a null children list");
         children.add(c);
         if (c != null)
         	c.setParent(this);
@@ -223,11 +225,15 @@ public class VariableNode implements MutableTreeNode {
 
     @Override
     public TreeNode getChildAt(int i) {
+    	if (children == null)
+    		return null;
         return children.get(i);
     }
 
     @Override
     public int getChildCount() {
+    	if (children == null)
+    		return 0;
         return children.size();
     }
 
@@ -238,6 +244,8 @@ public class VariableNode implements MutableTreeNode {
 
     @Override
     public int getIndex(TreeNode tn) {
+    	if (children == null)
+    		return -1;
         return children.indexOf(tn);
     }
 
@@ -268,6 +276,8 @@ public class VariableNode implements MutableTreeNode {
      */
     @Override
     public boolean isLeaf() {
+    	if (children == null)
+    		return true;
         return children.size() == 0;
     }
 
@@ -304,11 +314,15 @@ public class VariableNode implements MutableTreeNode {
 
     @Override
     public void insert(MutableTreeNode mtn, int i) {
+    	if (children == null)
+    		throw new NullPointerException("trying to insert child " + mtn + " at index " + i + " into a null children list");
         children.add(i, this);
     }
 
     @Override
     public void remove(int i) {
+    	if (children == null)
+    		throw new NullPointerException("trying to remove child at index " + i + " from a null children list");
         MutableTreeNode mtn = children.remove(i);
         if (mtn != null) {
             mtn.setParent(null);
@@ -317,6 +331,8 @@ public class VariableNode implements MutableTreeNode {
 
     @Override
     public void remove(MutableTreeNode mtn) {
+    	if (children == null)
+    		throw new NullPointerException("trying to remove child " + mtn + " from a null children list");
         children.remove(mtn);
         mtn.setParent(null);
     }
@@ -325,6 +341,9 @@ public class VariableNode implements MutableTreeNode {
      * Remove all children from this {@link VariableNode}.
      */
     public void removeAllChildren() {
+    	if (children == null)
+    		return;
+    	
         for (VariableNode vn : children) {
             vn.setParent(null);
         }
@@ -340,6 +359,8 @@ public class VariableNode implements MutableTreeNode {
 
     @Override
     public void removeFromParent() {
+    	if (parent == null)
+    		return;
         parent.remove(this);
         this.parent = null;
     }

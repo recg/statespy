@@ -2,8 +2,6 @@ package kevin;
 
 import java.util.ArrayList;
 
-import javax.swing.tree.MutableTreeNode;
-
 import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
 import org.javers.core.diff.Diff;
@@ -26,6 +24,10 @@ import com.sun.jdi.event.EventQueue;
 import com.sun.jdi.event.EventSet;
 import com.sun.jdi.request.BreakpointRequest;
 
+import de.danielbechler.diff.ObjectDiffer;
+import de.danielbechler.diff.ObjectDifferBuilder;
+import de.danielbechler.diff.node.DiffNode;
+import de.danielbechler.diff.node.Visit;
 import objectnodes.CapturedState;
 import objectnodes.VariableNode;
 
@@ -169,7 +171,7 @@ public class BreakpointEventHandler extends Thread {
 
 
 		ReferenceType ref = evt.location().declaringType(); // static reference to enclosing class
-		for (Field f : ref.allFields())
+		for (Field f : ref.fields()) //ref.allFields())
 		{
 			// ignore unmodifiable variables
 			if (Utils.shouldExcludeField(f)) {
@@ -183,6 +185,7 @@ public class BreakpointEventHandler extends Thread {
 		CapturedState capState = new CapturedState(threadRef, currentThis, be);
 		this.capturedStates.add(capState);	
 		capState.dump();
+		capState.visualize();
 
 		if (be.type.equals(BreakpointType.EXIT)) {
 			CapturedState beginState = findMatchingBeginState(capState);
@@ -245,7 +248,18 @@ public class BreakpointEventHandler extends Thread {
 	
 
 	public void compareStates(CapturedState beg, CapturedState end) {
+		// how to use java-object-diff:
+		// http://java-object-diff.readthedocs.io/en/latest/getting-started/
 		
+		DiffNode diff = ObjectDifferBuilder.buildDefault().compare(beg.getRootObject(), end.getRootObject());
+		
+		diff.visit(new DiffNode.Visitor()
+		{
+		    public void node(DiffNode node, Visit visit)
+		    {
+		        System.out.println(node.getPath() + " => " + node.getState());
+		    }
+		});
 	}
 	
 	
@@ -258,6 +272,7 @@ public class BreakpointEventHandler extends Thread {
 //		        .withListCompareAlgorithm(ListCompareAlgorithm.LEVENSHTEIN_DISTANCE)
 //		        .build();
 //		
+////		Diff diff = javers.compare(beg.getRootObject(), end.getRootObject());
 //		Diff diff = javers.compareCollections(beg.getRootObject().getChildren(), end.getRootObject().getChildren(), VariableNode.class);
 //		System.out.println(diff.prettyPrint());
 //	}
