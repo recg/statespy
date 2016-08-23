@@ -22,7 +22,7 @@ public class SwingTree extends JFrame {
 	
 	JTree tree;
 	JScrollPane scrollPane;
-	JTextField textField = new JTextField();
+	JTextField bottomTextField = new JTextField();
 
 	Renderer renderer = new Renderer();
 
@@ -36,24 +36,26 @@ public class SwingTree extends JFrame {
 		tree.addTreeSelectionListener(new TreeHandler());
 		scrollPane = new JScrollPane(tree);
 		getContentPane().add("Center", scrollPane);
-		getContentPane().add("South", textField);
+		getContentPane().add("South", bottomTextField);
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		setSize(500, 500);
+		setSize(800, 500);
 		setVisible(true);
 	}
 
 	public class TreeHandler implements TreeSelectionListener {
 		public void valueChanged(TreeSelectionEvent e) {
 			TreePath path = e.getPath();
-			String text = path.getPathComponent(path.getPathCount() - 1).toString();
-			if (path.getPathCount() > 3) {
-				text += ": ";
-				text += Integer.toString((int) (Math.random() * 50)) + " Wins ";
-				text += Integer.toString((int) (Math.random() * 50)) + " Losses";
+			Object component = path.getPathComponent(path.getPathCount() - 1);
+			
+			if (component instanceof VariableNode) {
+				VariableNode node = (VariableNode)component;
+				bottomTextField.setText(node.getValueAsString());
 			}
-			textField.setText(text);
+			else {
+				bottomTextField.setText("Node is not a VariableNode, couldn't get value.");
+			}
 		}
 	}
 }
@@ -67,7 +69,10 @@ class Renderer extends JLabel implements TreeCellRenderer {
 			return this;
 		}
 		
-		setText(value.toString());
+		if (value instanceof VariableNode) {
+			VariableNode node = (VariableNode)value;
+			setText(node.getName()+ "      (" + node.getTypeString() + ")");
+		}
 		return this;
 	}
 }
