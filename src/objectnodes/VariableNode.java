@@ -48,383 +48,391 @@ import org.javers.core.metamodel.annotation.ValueObject;
  * @author Martin Leopold <m@martinleopold.com>
  */
 public class VariableNode implements MutableTreeNode {
-	
-    public static final int TYPE_UNKNOWN = -1;
-    public static final int TYPE_OBJECT = 0;
-    public static final int TYPE_ARRAY = 1;
-    public static final int TYPE_INTEGER = 2;
-    public static final int TYPE_FLOAT = 3;
-    public static final int TYPE_BOOLEAN = 4;
-    public static final int TYPE_CHAR = 5;
-    public static final int TYPE_STRING = 6;
-    public static final int TYPE_LONG = 7;
-    public static final int TYPE_DOUBLE = 8;
-    public static final int TYPE_BYTE = 9;
-    public static final int TYPE_SHORT = 10;
-    public static final int TYPE_VOID = 11;
-    
-    
-    protected String type;
-    protected String name;
 
-    protected Value value;
-    protected List<VariableNode> children = new ArrayList();
-    protected VariableNode parent;
+	public static final int TYPE_UNKNOWN = -1;
+	public static final int TYPE_OBJECT = 0;
+	public static final int TYPE_ARRAY = 1;
+	public static final int TYPE_INTEGER = 2;
+	public static final int TYPE_FLOAT = 3;
+	public static final int TYPE_BOOLEAN = 4;
+	public static final int TYPE_CHAR = 5;
+	public static final int TYPE_STRING = 6;
+	public static final int TYPE_LONG = 7;
+	public static final int TYPE_DOUBLE = 8;
+	public static final int TYPE_BYTE = 9;
+	public static final int TYPE_SHORT = 10;
+	public static final int TYPE_VOID = 11;
 
-    /**
-     * Construct a {@link VariableNode}.
-     * @param name the name
-     * @param type the type
-     * @param value the value
-     */
-    public VariableNode(String name, String type, Value value, VariableNode parent) {
-        this.name = name;
-        this.type = type;
-        this.value = value;
-        this.parent = parent;
-    }
+	protected String type;
+	protected String name;
 
-    public void setValue(Value value) {
-        this.value = value;
-    }
+	protected Value value;
+	protected List<VariableNode> children = new ArrayList<>();
+	protected VariableNode parent;
 
-    public Value getValue() {
-        return value;
-    }
+	/**
+	 * Construct a {@link VariableNode}.
+	 * 
+	 * @param name
+	 *            the name
+	 * @param type
+	 *            the type
+	 * @param value
+	 *            the value
+	 */
+	public VariableNode(String name, String type, Value value, VariableNode parent) {
+		this.name = name;
+		this.type = type;
+		this.value = value;
+		this.parent = parent;
+	}
 
-    /**
-     * Get a String representation of this variable nodes value.
-     *
-     * @return a String representing the value.
-     */
-    public String getValueAsString() {
-    	
-    	if (this.value instanceof PrimitiveValue) {
-    		return ((PrimitiveValue)this.value).toString();
-    	}
-    	
-    	if (this.value instanceof StringReference) {
-    		return "\"" + ((StringReference)this.value).value() + "\"";
-    	}
-    	
-    	if (this.value instanceof ArrayReference) {
-    		ArrayReference arrRef = (ArrayReference)this.value;
-    		if (this.getChildCount() != arrRef.length()) {
-    			System.err.println("childCount should equal arrRef length!!");
-    		}
-    		return this.type + "[" + this.getChildCount() + "]"; 
-    	}
-    	
-    	if (this.value instanceof ObjectReference) {
-    		return "instance of " + this.type;
-    	}
-    	
-    	
-//    	
-//        String str;
-//        if (value != null) {
-//            if (getType() == TYPE_OBJECT) {
-//                str = "instance of " + type;
-//            } else if (getType() == TYPE_ARRAY) {
-//                //instance of int[5] (id=998) --> instance of int[5]
-//            	try {
-//	                str = value.toString().substring(0, value.toString().lastIndexOf(" "));
-//            	} catch (StringIndexOutOfBoundsException ex) {
-//            		ex.printStackTrace();
-//            		return null;
-//            	}
-//            } else if (getType() == TYPE_STRING) {
-//                str = ((StringReference) value).value(); // use original string value (without quotes)
-//            } else {
-//                str = value.toString();
-//            }
-//        } else {
-//            str = "null";
-//        }
-        return "error getting value";
-    }
+	public void setValue(Value value) {
+		this.value = value;
+	}
 
-    public String getTypeString() {
-        return type;
-    }
+	public Value getValue() {
+		return value;
+	}
 
-//    public int getType() {
-//    	if (type == null) {
-//    		return TYPE_UNKNOWN;
-//    	}
-//    	if (this.value instanceof ArrayReference) {
-//    		return TYPE_ARRAY;
-//    	}
-//    	if (this.value instanceof StringReference) {
-//    		return TYPE_STRING;
-//    	}
-//    	if (this.value instanceof IntegerValue) {
-//    		return TYPE_INTEGER;
-//    	}
-//        if (type.equals("long")) {
-//            return TYPE_LONG;
-//        }
-//        if (type.equals("byte")) {
-//            return TYPE_BYTE;
-//        }
-//        if (type.equals("short")) {
-//            return TYPE_SHORT;
-//        }
-//        if (type.equals("float")) {
-//            return TYPE_FLOAT;
-//        }
-//        if (type.equals("double")) {
-//            return TYPE_DOUBLE;
-//        }
-//        if (type.equals("char")) {
-//            return TYPE_CHAR;
-//        }
-//        if (type.equals("java.lang.String")) {
-//            return TYPE_STRING;
-//        }
-//        if (type.equals("boolean")) {
-//            return TYPE_BOOLEAN;
-//        }
-//        if (type.equals("void")) {
-//            return TYPE_VOID; //TODO: check if this is correct
-//        }
-//        return TYPE_OBJECT;
-//    }
+	/**
+	 * Get a String representation of this variable nodes value.
+	 *
+	 * @return a String representing the value.
+	 */
+	public String getValueAsString() {
 
-    public String getName() {
-        return name;
-    }
+		if (this.value instanceof PrimitiveValue) {
+			return ((PrimitiveValue) this.value).toString();
+		}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+		if (this.value instanceof StringReference) {
+			return "\"" + ((StringReference) this.value).value() + "\"";
+		}
 
-    /**
-     * Add a {@link VariableNode} as child.
-     *
-     * @param c the {@link VariableNode} to add.
-     */
-    public void addChild(VariableNode c) {
-    	if (children == null)
-    		throw new NullPointerException("trying to add child " + c + " to a null children list");
-        children.add(c);
-        if (c != null)
-        	c.setParent(this);
-    }
+		if (this.value instanceof ArrayReference) {
+			ArrayReference arrRef = (ArrayReference) this.value;
+			if (this.getChildCount() != arrRef.length()) {
+				System.err.println("childCount(" + this.getChildCount() + ") should equal arrRef length (" + arrRef.length() + ")!!");
+			}
+			return this.type + "[" + this.getChildCount() + "]";
+		}
 
-    /**
-     * Add multiple {@link VariableNode}s as children.
-     *
-     * @param children the list of {@link VariableNode}s to add.
-     */
-    public void addChildren(List<VariableNode> children) {
-        for (VariableNode child : children) {
-            addChild(child);
-        }
-    }
+		if (this.value instanceof ObjectReference) {
+			return "instance of " + this.type;
+		}
 
-    @Override
-    public TreeNode getChildAt(int i) {
-    	if (children == null)
-    		return null;
-        return children.get(i);
-    }
+		//
+		// String str;
+		// if (value != null) {
+		// if (getType() == TYPE_OBJECT) {
+		// str = "instance of " + type;
+		// } else if (getType() == TYPE_ARRAY) {
+		// //instance of int[5] (id=998) --> instance of int[5]
+		// try {
+		// str = value.toString().substring(0, value.toString().lastIndexOf("
+		// "));
+		// } catch (StringIndexOutOfBoundsException ex) {
+		// ex.printStackTrace();
+		// return null;
+		// }
+		// } else if (getType() == TYPE_STRING) {
+		// str = ((StringReference) value).value(); // use original string value
+		// (without quotes)
+		// } else {
+		// str = value.toString();
+		// }
+		// } else {
+		// str = "null";
+		// }
+		return "error getting value";
+	}
 
-    @Override
-    public int getChildCount() {
-    	if (children == null)
-    		return 0;
-        return children.size();
-    }
+	public String getTypeString() {
+		return type;
+	}
 
-    @Override
-    public TreeNode getParent() {
-        return parent;
-    }
+	// public int getType() {
+	// if (type == null) {
+	// return TYPE_UNKNOWN;
+	// }
+	// if (this.value instanceof ArrayReference) {
+	// return TYPE_ARRAY;
+	// }
+	// if (this.value instanceof StringReference) {
+	// return TYPE_STRING;
+	// }
+	// if (this.value instanceof IntegerValue) {
+	// return TYPE_INTEGER;
+	// }
+	// if (type.equals("long")) {
+	// return TYPE_LONG;
+	// }
+	// if (type.equals("byte")) {
+	// return TYPE_BYTE;
+	// }
+	// if (type.equals("short")) {
+	// return TYPE_SHORT;
+	// }
+	// if (type.equals("float")) {
+	// return TYPE_FLOAT;
+	// }
+	// if (type.equals("double")) {
+	// return TYPE_DOUBLE;
+	// }
+	// if (type.equals("char")) {
+	// return TYPE_CHAR;
+	// }
+	// if (type.equals("java.lang.String")) {
+	// return TYPE_STRING;
+	// }
+	// if (type.equals("boolean")) {
+	// return TYPE_BOOLEAN;
+	// }
+	// if (type.equals("void")) {
+	// return TYPE_VOID; //TODO: check if this is correct
+	// }
+	// return TYPE_OBJECT;
+	// }
 
-    @Override
-    public int getIndex(TreeNode tn) {
-    	if (children == null)
-    		return -1;
-        return children.indexOf(tn);
-    }
+	public String getName() {
+		return name;
+	}
 
-    @Override
-    public boolean getAllowsChildren() {
-        if (value == null) {
-            return false;
-        }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-        // handle strings
-        if ((value instanceof StringReference) || 
-        	(value instanceof PrimitiveValue)) {
-            return false;
-        }
-        
-        if ((value instanceof ArrayReference) || 
-        	(value instanceof ObjectReference)) {
-        	return true;
-        }
+	/**
+	 * Add a {@link VariableNode} as child.
+	 *
+	 * @param c
+	 *            the {@link VariableNode} to add.
+	 */
+	public void addChild(VariableNode c) {
+		if (children == null)
+			throw new NullPointerException("trying to add child " + c + " to a null children list");
+		children.add(c);
+		if (c != null)
+			c.setParent(this);
+	}
 
-       return true; // default: don't disable children unnecessarily
-    }
+	/**
+	 * Add multiple {@link VariableNode}s as children.
+	 *
+	 * @param children
+	 *            the list of {@link VariableNode}s to add.
+	 */
+	public void addChildren(List<VariableNode> children) {
+		for (VariableNode child : children) {
+			addChild(child);
+		}
+	}
 
-    /**
-     * This controls the default icon and disclosure triangle.
-     *
-     * @return true, will show "folder" icon and disclosure triangle.
-     */
-    @Override
-    public boolean isLeaf() {
-    	if (children == null)
-    		return true;
-        return children.size() == 0;
-    }
+	@Override
+	public TreeNode getChildAt(int i) {
+		if (children == null)
+			return null;
+		return children.get(i);
+	}
 
-    @Override
-    public Enumeration children() {
-        return Collections.enumeration(children);
-    }
+	@Override
+	public int getChildCount() {
+		if (children == null)
+			return 0;
+		return children.size();
+	}
 
-    /**
-     * Get a String representation of this {@link VariableNode}.
-     *
-     * @return the name of the variable (for sorting to work).
-     */
-    @Override
-    public String toString() {
-        return getName(); // for sorting
-    }
+	@Override
+	public TreeNode getParent() {
+		return parent;
+	}
 
-    /**
-     * Get a String description of this {@link VariableNode}. Contains the type,
-     * name and value.
-     *
-     * @return the description
-     */
-    public String getDescription() {
-        String str = "";
-        if (type != null) {
-            str += type + " ";
-        }
-        str += name;
-        str += " = " + getValueAsString();
-        return str;
-    }
+	@Override
+	public int getIndex(TreeNode tn) {
+		if (children == null)
+			return -1;
+		return children.indexOf(tn);
+	}
 
-    @Override
-    public void insert(MutableTreeNode mtn, int i) {
-    	if (children == null)
-    		throw new NullPointerException("trying to insert child " + mtn + " at index " + i + " into a null children list");
-        children.add(i, this);
-    }
+	@Override
+	public boolean getAllowsChildren() {
+		if (value == null) {
+			return false;
+		}
 
-    @Override
-    public void remove(int i) {
-    	if (children == null)
-    		throw new NullPointerException("trying to remove child at index " + i + " from a null children list");
-        MutableTreeNode mtn = children.remove(i);
-        if (mtn != null) {
-            mtn.setParent(null);
-        }
-    }
+		// handle strings
+		if ((value instanceof StringReference) || (value instanceof PrimitiveValue)) {
+			return false;
+		}
 
-    @Override
-    public void remove(MutableTreeNode mtn) {
-    	if (children == null)
-    		throw new NullPointerException("trying to remove child " + mtn + " from a null children list");
-        children.remove(mtn);
-        mtn.setParent(null);
-    }
+		if ((value instanceof ArrayReference) || (value instanceof ObjectReference)) {
+			return true;
+		}
 
-    /**
-     * Remove all children from this {@link VariableNode}.
-     */
-    public void removeAllChildren() {
-    	if (children == null)
-    		return;
-    	
-        for (VariableNode vn : children) {
-            vn.setParent(null);
-        }
-        children.clear();
-    }
+		return true; // default: don't disable children unnecessarily
+	}
 
-    @Override
-    public void setUserObject(Object o) {
-        if (o instanceof Value) {
-            value = (Value) o;
-        }
-    }
+	/**
+	 * This controls the default icon and disclosure triangle.
+	 *
+	 * @return true, will show "folder" icon and disclosure triangle.
+	 */
+	@Override
+	public boolean isLeaf() {
+		if (children == null)
+			return true;
+		return children.size() == 0;
+	}
 
-    @Override
-    public void removeFromParent() {
-    	if (parent == null)
-    		return;
-        parent.remove(this);
-        this.parent = null;
-    }
+	@Override
+	public Enumeration children() {
+		return Collections.enumeration(children);
+	}
 
-    @Override
-    public void setParent(MutableTreeNode mtn) {
-        if (mtn instanceof VariableNode) {
-        	parent = (VariableNode)mtn;
-        }
-        else {
-        	System.err.println("Error: tried to setParent of this=" + this + " to parent mtn=" + mtn);
-        }
-    }
-    
-    public List<VariableNode> getChildren() {
-    	return children;
-    }
+	/**
+	 * Get a String representation of this {@link VariableNode}.
+	 *
+	 * @return the name of the variable (for sorting to work).
+	 */
+	@Override
+	public String toString() {
+		return getName(); // for sorting
+	}
 
-    /**
-     * Test for equality. To be equal, two {@link VariableNode}s need to have
-     * equal type, name and value.
-     *
-     * @param obj the object to test for equality with this {@link VariableNode}
-     * @return true if the given object is equal to this {@link VariableNode}
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final VariableNode other = (VariableNode) obj;
-        if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type)) {
-            //System.out.println("type not equal");
-            return false;
-        }
-        if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
-            //System.out.println("name not equal");
-            return false;
-        }
-        if (this.value != other.value && (this.value == null || !this.value.equals(other.value))) {
-            //System.out.println("value not equal");
-            return false;
-        }
-//        if (this.parent != other.parent && (this.parent == null || !this.parent.equals(other.parent))) {
-//            System.out.println("parent not equal: " + this.parent + "/" + other.parent);
-//            return false;
-//        }
-        return true;
-    }
+	/**
+	 * Get a String description of this {@link VariableNode}. Contains the type,
+	 * name and value.
+	 *
+	 * @return the description
+	 */
+	public String getDescription() {
+		String str = "";
+		if (type != null) {
+			str += type + " ";
+		}
+		str += name;
+		str += " = " + getValueAsString();
+		return str;
+	}
 
-    /**
-     * Returns a hash code based on type, name and value.
-     */
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 97 * hash + (this.type != null ? this.type.hashCode() : 0);
-        hash = 97 * hash + (this.name != null ? this.name.hashCode() : 0);
-        hash = 97 * hash + (this.value != null ? this.value.hashCode() : 0);
-//        hash = 97 * hash + (this.parent != null ? this.parent.hashCode() : 0);
-        return hash;
-    }
+	@Override
+	public void insert(MutableTreeNode mtn, int i) {
+		if (children == null)
+			throw new NullPointerException(
+					"trying to insert child " + mtn + " at index " + i + " into a null children list");
+		children.add(i, this);
+	}
+
+	@Override
+	public void remove(int i) {
+		if (children == null)
+			throw new NullPointerException("trying to remove child at index " + i + " from a null children list");
+		MutableTreeNode mtn = children.remove(i);
+		if (mtn != null) {
+			mtn.setParent(null);
+		}
+	}
+
+	@Override
+	public void remove(MutableTreeNode mtn) {
+		if (children == null)
+			throw new NullPointerException("trying to remove child " + mtn + " from a null children list");
+		children.remove(mtn);
+		mtn.setParent(null);
+	}
+
+	/**
+	 * Remove all children from this {@link VariableNode}.
+	 */
+	public void removeAllChildren() {
+		if (children == null)
+			return;
+
+		for (VariableNode vn : children) {
+			vn.setParent(null);
+		}
+		children.clear();
+	}
+
+	@Override
+	public void setUserObject(Object o) {
+		if (o instanceof Value) {
+			value = (Value) o;
+		}
+	}
+
+	@Override
+	public void removeFromParent() {
+		if (parent == null)
+			return;
+		parent.remove(this);
+		this.parent = null;
+	}
+
+	@Override
+	public void setParent(MutableTreeNode mtn) {
+		if (mtn instanceof VariableNode) {
+			parent = (VariableNode) mtn;
+		} else {
+			System.err.println("Error: tried to setParent of this=" + this + " to parent mtn=" + mtn);
+		}
+	}
+
+	public List<VariableNode> getChildren() {
+		return children;
+	}
+
+	/**
+	 * Test for equality. To be equal, two {@link VariableNode}s need to have
+	 * equal type, name and value.
+	 *
+	 * @param obj
+	 *            the object to test for equality with this {@link VariableNode}
+	 * @return true if the given object is equal to this {@link VariableNode}
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final VariableNode other = (VariableNode) obj;
+		if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type)) {
+			// System.out.println("type not equal");
+			return false;
+		}
+		if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
+			// System.out.println("name not equal");
+			return false;
+		}
+		if (this.value != other.value && (this.value == null || !this.value.equals(other.value))) {
+			// System.out.println("value not equal");
+			return false;
+		}
+		// if (this.parent != other.parent && (this.parent == null ||
+		// !this.parent.equals(other.parent))) {
+		// System.out.println("parent not equal: " + this.parent + "/" +
+		// other.parent);
+		// return false;
+		// }
+		return true;
+	}
+
+	/**
+	 * Returns a hash code based on type, name and value.
+	 */
+	@Override
+	public int hashCode() {
+		int hash = 3;
+		hash = 97 * hash + (this.type != null ? this.type.hashCode() : 0);
+		hash = 97 * hash + (this.name != null ? this.name.hashCode() : 0);
+		hash = 97 * hash + (this.value != null ? this.value.hashCode() : 0);
+		// hash = 97 * hash + (this.parent != null ? this.parent.hashCode() :
+		// 0);
+		return hash;
+	}
 
 }

@@ -57,8 +57,14 @@ public class SwingTree extends JFrame {
 
 class Renderer extends JLabel implements TreeCellRenderer {
 	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected,
-			boolean expanded, boolean leaf, int row, boolean hasFocus) {
-		setText(value.toString() + "                   ");
+			boolean expanded, boolean leaf, int row, boolean hasFocus) 
+	{
+		if (value == null) {
+			setText("null");
+			return this;
+		}
+		
+		setText(value.toString());
 		return this;
 	}
 }

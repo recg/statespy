@@ -8,7 +8,7 @@ public class StringNode extends VariableNode {
 
 	public StringNode(String name, String type, StringReference ref, VariableNode parent) {
 		super(name, type, ref, parent);
-		this.children = null;
+		this.children.clear();
 		this.stringValue = ref.value();
 	}
 	

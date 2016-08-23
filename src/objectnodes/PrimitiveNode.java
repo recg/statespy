@@ -11,7 +11,7 @@ public class PrimitiveNode extends VariableNode {
 	
 	public PrimitiveNode(String name, String type, Value value, VariableNode parent) {
 		super(name, type, value, parent);
-		this.children = null;
+		this.children.clear();
 		setPrimitiveValue(value);
 	}
 	

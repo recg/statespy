@@ -99,11 +99,15 @@ public class CapturedState {
                 ArrayNode arrnode = new ArrayNode(fieldName, arr.type().toString(), arr, parent);
                 this.objectToNodeMap.put(arr, arrnode);
             	for (int i = 0; i < arr.length(); i++) {
-                	arrnode.addChild(captureState(arr.getValue(i), fieldName, arr.type().name(), arrnode, depth + 1, maxDepth, includeInherited));
+                	VariableNode element = captureState(arr.getValue(i), fieldName, arr.type().name(), arrnode, depth + 1, maxDepth, includeInherited);
+                	if (element != null) {
+                		arrnode.addChild(element);
+                	}
                 }
                 return arrnode;
             } 
-            else if (obj instanceof ObjectReference) { // must come after StringReference and ArrayReference
+        	// must come after StringReference and ArrayReference
+            else if (obj instanceof ObjectReference) { 
             	// here we have a normal class object
             	ObjectReference objectRef = (ObjectReference) obj;
             	
@@ -120,7 +124,9 @@ public class CapturedState {
                 	Value childValue = objectRef.getValue(field);  	
                 	if (childValue != null) {
 	                	VariableNode child = captureState(childValue, field.name(), field.typeName(), varnode, depth + 1, maxDepth, includeInherited);
-	                    varnode.addChild(child);
+	                	if (child != null) {
+	                		varnode.addChild(child);
+	                	}
                 	}
                 }
                 return varnode;
