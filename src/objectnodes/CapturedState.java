@@ -81,7 +81,9 @@ public class CapturedState {
         	if (!(obj instanceof PrimitiveValue || obj instanceof StringReference)) {
         		VariableNode redundant = this.objectToNodeMap.get(obj);
         		if (redundant != null) {
-        			return redundant;
+        			//return redundant; 
+        			// here we can return null instead to FORCE no circular recursion
+        			return null;
         		}
         	}
         	

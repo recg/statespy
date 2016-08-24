@@ -68,6 +68,8 @@ public class VariableNode implements MutableTreeNode {
 
 	protected Value value;
 	protected List<VariableNode> children = new ArrayList<>();
+	
+	@DiffIgnore
 	protected VariableNode parent;
 
 	/**

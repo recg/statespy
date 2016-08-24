@@ -1,12 +1,16 @@
 package kevin;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
 import org.javers.core.diff.Diff;
 import org.javers.core.diff.ListCompareAlgorithm;
 
+import com.cedarsoftware.util.GraphComparator;
+import com.cedarsoftware.util.GraphComparator.Delta;
+import com.cedarsoftware.util.GraphComparator.ID;
 import com.sun.jdi.AbsentInformationException;
 import com.sun.jdi.Field;
 import com.sun.jdi.IncompatibleThreadStateException;
@@ -16,6 +20,7 @@ import com.sun.jdi.ObjectReference;
 import com.sun.jdi.ReferenceType;
 import com.sun.jdi.StackFrame;
 import com.sun.jdi.ThreadReference;
+import com.sun.jdi.Value;
 import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.event.BreakpointEvent;
 import com.sun.jdi.event.Event;
@@ -170,17 +175,16 @@ public class BreakpointEventHandler extends Thread {
 		 */
 
 
-		ReferenceType ref = evt.location().declaringType(); // static reference to enclosing class
-		for (Field f : ref.fields()) //ref.allFields())
-		{
-			// ignore unmodifiable variables
-			if (Utils.shouldExcludeField(f)) {
-				continue;
-			}
-
-			System.out.println("       " + (f.isStatic() ? "static " : "") + f.typeName() + "  " + f.name() + " = " + Utils.getValueAsString(currentThis.getValue(f)) + "\n             [in " + f.declaringType() + "]\n");
-
-		}
+//		ReferenceType ref = evt.location().declaringType(); // static reference to enclosing class
+//		for (Field f : ref.fields()) //ref.allFields())
+//		{
+//			// ignore unmodifiable variables
+//			if (Utils.shouldExcludeField(f)) {
+//				continue;
+//			}
+//			System.out.println("       " + (f.isStatic() ? "static " : "") + f.typeName() + "  " + f.name() + " = " + Utils.getValueAsString(currentThis.getValue(f)) + "\n             [in " + f.declaringType() + "]\n");
+//		}
+		
 		
 		CapturedState capState = new CapturedState(threadRef, currentThis, be);
 		this.capturedStates.add(capState);	
@@ -246,34 +250,77 @@ public class BreakpointEventHandler extends Thread {
 		return null;
 	}
 	
-
+	
 	public void compareStates(CapturedState beg, CapturedState end) {
+//		compareStatesJOD(beg, end);
+		compareStatesJavaUtil(beg, end);
+//		compareStatesJavers(beg, end);
+	}
+
+	/**
+	 * Compares states using the java-object-diff library
+	 * @param base
+	 * @param working
+	 */
+	public void compareStatesJOD(final CapturedState base, final CapturedState working) {
 		// how to use java-object-diff:
 		// http://java-object-diff.readthedocs.io/en/latest/getting-started/
 		
-		DiffNode diff = ObjectDifferBuilder.buildDefault().compare(beg.getRootObject(), end.getRootObject());
+		// TODO: exclude the VariableNode.parent field from any analysis, it will always be CIRCULAR
+		
+		DiffNode diff = ObjectDifferBuilder.buildDefault().compare(working.getRootObject(), base.getRootObject());
 		
 		diff.visit(new DiffNode.Visitor()
 		{
 		    public void node(DiffNode node, Visit visit)
 		    {
-		        System.out.println(node.getPath() + " => " + node.getState());
+		    	// skip irrelevant unchanged nodes
+		    	if ((node.getState().equals(de.danielbechler.diff.node.DiffNode.State.CIRCULAR)) ||
+		    	   (node.getState().equals(de.danielbechler.diff.node.DiffNode.State.UNTOUCHED)))	    	
+		    	{
+		    		return; 
+		    	}
+		    	
+//		    	final Object baseValue = node.canonicalGet(base);
+//		        final Object workingValue = node.canonicalGet(working);
+//		        final String message = node.getPath() + " changed from " + 
+//		                               baseValue + " to " + workingValue;
+//		        System.out.println(message);
+		    	System.out.println(node.getPath() + " => " + node.getState());
 		    }
 		});
 	}
 	
 	
+	public void compareStatesJavaUtil(CapturedState beg, CapturedState end) {
+		List<Delta> diffs = GraphComparator.compare(beg.getRootObject(), end.getRootObject(), new ID() {
+			@Override
+			public Object getId(Object objectToId) {
+				if (objectToId instanceof VariableNode) {
+					return ((VariableNode)objectToId).getValue();
+				}
+				
+				// TODO: handle other object types? dunno
+				
+				return objectToId;
+			}
+		});
+		
+		for (Delta d : diffs) {
+			System.out.println(d);
+		}
+	}
 	
 	
-//	public void compareStates(CapturedState beg, CapturedState end) {
-//		// let's test jaVers here
-//		Javers javers = JaversBuilder.javers()
-//				.registerValue(com.sun.jdi.Value.class)
-//		        .withListCompareAlgorithm(ListCompareAlgorithm.LEVENSHTEIN_DISTANCE)
-//		        .build();
-//		
-////		Diff diff = javers.compare(beg.getRootObject(), end.getRootObject());
+	public void compareStatesJavers(CapturedState beg, CapturedState end) {
+		// let's test jaVers here
+		Javers javers = JaversBuilder.javers()
+				.registerValue(com.sun.jdi.Value.class)
+		        .withListCompareAlgorithm(ListCompareAlgorithm.LEVENSHTEIN_DISTANCE)
+		        .build();
+		
+		Diff diff = javers.compare(beg.getRootObject(), end.getRootObject());
 //		Diff diff = javers.compareCollections(beg.getRootObject().getChildren(), end.getRootObject().getChildren(), VariableNode.class);
-//		System.out.println(diff.prettyPrint());
-//	}
+		System.out.println(diff.prettyPrint());
+	}
 }
