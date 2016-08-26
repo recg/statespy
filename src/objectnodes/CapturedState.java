@@ -57,7 +57,7 @@ public class CapturedState {
 
 	
 	public void captureObjectState(Value object) {
-		rootObject = captureState(object, "this (top-level)", object.type().name(), null, 0, 5, true);
+		rootObject = captureState(object, "this (top-level)", object.type().name(), null, 0, 4, true);
 	}
 	
 	
@@ -81,7 +81,7 @@ public class CapturedState {
         	if (!(obj instanceof PrimitiveValue || obj instanceof StringReference)) {
         		VariableNode redundant = this.objectToNodeMap.get(obj);
         		if (redundant != null) {
-        			//return redundant; 
+//        			return redundant; 
         			// here we can return null instead to FORCE no circular recursion
         			return null;
         		}
@@ -98,10 +98,20 @@ public class CapturedState {
         	}
         	else if (obj instanceof ArrayReference) {
         		ArrayReference arr = (ArrayReference)obj;
-                ArrayNode arrnode = new ArrayNode(fieldName, arr.type().toString(), arr, parent);
+                ArrayNode arrnode = new ArrayNode(fieldName, arr.type().name(), arr, parent);
                 this.objectToNodeMap.put(arr, arrnode);
             	for (int i = 0; i < arr.length(); i++) {
-                	VariableNode element = captureState(arr.getValue(i), fieldName, arr.type().name(), arrnode, depth + 1, maxDepth, includeInherited);
+            		Value arrayVal = arr.getValue(i);
+            		if (arrayVal == null) {
+            			continue;
+            		}
+            	
+            		String elementName = fieldName + "[" + i + "]";
+            		if (Utils.shouldExcludeElement(elementName, arr.type(), arrayVal.type())) {
+            			continue;
+            		}
+            		
+                	VariableNode element = captureState(arrayVal, elementName, arrayVal.type().name(), arrnode, depth + 1, maxDepth, includeInherited);
                 	if (element != null) {
                 		arrnode.addChild(element);
                 	}
@@ -119,12 +129,12 @@ public class CapturedState {
                 // capture the fields of this object
                 List<Field> fields = objectRef.referenceType().fields(); // .allFields();  //includeInherited ? obj.referenceType().visibleFields() : obj.referenceType().fields();
                 for (Field field : fields) {
-                	if (Utils.shouldExcludeField(field)) {
-                		continue;
-                	}
-                	
                 	Value childValue = objectRef.getValue(field);  	
+                	
                 	if (childValue != null) {
+                		if (Utils.shouldExcludeField(field, childValue.type())) {
+                			continue;
+                		}
 	                	VariableNode child = captureState(childValue, field.name(), field.typeName(), varnode, depth + 1, maxDepth, includeInherited);
 	                	if (child != null) {
 	                		varnode.addChild(child);

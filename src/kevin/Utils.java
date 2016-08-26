@@ -24,6 +24,7 @@ import com.sun.jdi.PrimitiveType;
 import com.sun.jdi.ReferenceType;
 import com.sun.jdi.ShortValue;
 import com.sun.jdi.StringReference;
+import com.sun.jdi.Type;
 import com.sun.jdi.Value;
 import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.VirtualMachineManager;
@@ -33,6 +34,15 @@ import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 
 public class Utils {
 
+	
+	public static boolean shouldExcludeElement(String name, Type staticType, Type runtimeType) {
+		return (runtimeType.name().contains("com.android.server.am.ActivityManagerService") || 
+				name.contains("shadow$_klass_") || 
+				name.contains("shadow$_monitor_")
+				);
+	}
+	
+	
 	/**
 	 * Currently, this function will return true if the field is:
 	 * <li> an enumeration constant
@@ -41,14 +51,14 @@ public class Utils {
 	 * @param f
 	 * @return
 	 */
-	public static boolean shouldExcludeField(Field f) {
+	public static boolean shouldExcludeField(Field f, Type runtimeType) {
 		// ignore unmodifiable variables
 		try {
 			return (f.isEnumConstant() || 
-				   (f.isFinal() && (f.typeName().equals("java.lang.String") || (f.type() instanceof PrimitiveType))) || //only ignore final primitives, not final Objects (a final arraylist can still be modified)  
-					f.name().equals("shadow$_klass_") || 
-					f.name().equals("shadow$_monitor_")
+				   (f.isFinal() && (f.typeName().contains("java.lang.String") || (f.type() instanceof PrimitiveType))) || //only ignore final primitives, not final Objects (a final arraylist can still be modified)  
+				    shouldExcludeElement(f.name(), f.type(), runtimeType)
 					);
+			
 		} catch (ClassNotLoadedException e) {
 //			e.printStackTrace();
 			System.err.println(e.toString() + ". " + e.getMessage());
@@ -141,8 +151,7 @@ public class Utils {
 	{
 		VirtualMachineManager vmMgr = Bootstrap.virtualMachineManager();
 		AttachingConnector socketConnector = null;
-		List<AttachingConnector> attachingConnectors = vmMgr.attachingConnectors();
-		for (AttachingConnector ac: attachingConnectors)
+		for (AttachingConnector ac: vmMgr.attachingConnectors())
 		{
 			if (ac.transport().name().equals("dt_socket"))
 			{
@@ -167,7 +176,7 @@ public class Utils {
 		hostnameArg.setValue("localhost");
 
 		VirtualMachine vm = socketConnector.attach(paramsMap);
-		System.out.println("Attached to process '" + vm.name() + "' at " + paramsMap.get("hostname") + ":" + paramsMap.get("port"));
+		System.out.println("Attached to process '" + vm.name() + "' at " + paramsMap.get("hostname") + ", " + paramsMap.get("port") + "\n");
 
 		return vm;
 	}
@@ -259,15 +268,39 @@ public class Utils {
 		}
 	}
 	
+	
+	public static String findMatchingClasses(VirtualMachine vm, String keyword) {
+		StringBuilder sb = new StringBuilder();
+
+		for (ReferenceType c : vm.allClasses())
+		{
+			if (c.toString().contains(keyword)) {
+				sb.append(c + "\n");
+			}
+		}
+		return sb.toString();
+	}
+	
+	
+	public static String getAllClasses(VirtualMachine vm) {
+		return getAllClasses(vm, false);
+	}
+	
 	/**
 	 * dumps all classes and their methods currently loaded by the debuggee VM
 	 */
-	public static void dumpAllClasses(VirtualMachine vm) {
+	public static String getAllClasses(VirtualMachine vm, boolean includeMethods) {
+		StringBuilder sb = new StringBuilder();
+		
 		for (ReferenceType c : vm.allClasses())
 		{
-			System.out.println(c);
-			for (Method m : c.methods())
-				System.out.println("   " + m);
+			sb.append(c);
+			if (includeMethods) {
+				for (Method m : c.methods())
+					sb.append("   " + m);
+			}
 		}
+		
+		return sb.toString();
 	}
 }

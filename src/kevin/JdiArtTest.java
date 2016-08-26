@@ -107,17 +107,21 @@ public class JdiArtTest {
 			VirtualMachine vm = Utils.connectToDebuggeeJVM(chosenTcpPort);
 	
 	
-			//dumpAllClasses();
+//			Utils.dumpAllClasses(vm);
 			
 			BreakpointEventHandler bkptHandler = new BreakpointEventHandler(vm);
 			
-			String className = "com.android.server.AlarmManagerService";
-			String methodName = "setImpl";
+//			String className = "com.android.server.AlarmManagerService";
+//			String methodName = "setImpl";
+			String className = "com.android.server.clipboard.ClipboardService";
+			String methodName = "onTransact";
+			
+			System.out.println(Utils.findMatchingClasses(vm, "Clipboard"));
+			
 			ReferenceType classRef = vm.classesByName(className).get(0);
 			Method mthd = classRef.methodsByName(methodName).get(0);
 			
 			bkptHandler.addBreakpointAtMethod(mthd, BreakpointType.ENTRY, true);
-			bkptHandler.addBreakpointAtMethod(mthd, BreakpointType.EXIT, true);
 			
 			bkptHandler.start();
 			

@@ -27,7 +27,9 @@ import com.sun.jdi.event.Event;
 import com.sun.jdi.event.EventIterator;
 import com.sun.jdi.event.EventQueue;
 import com.sun.jdi.event.EventSet;
+import com.sun.jdi.event.MethodExitEvent;
 import com.sun.jdi.request.BreakpointRequest;
+import com.sun.jdi.request.MethodExitRequest;
 
 import de.danielbechler.diff.ObjectDiffer;
 import de.danielbechler.diff.ObjectDifferBuilder;
@@ -54,7 +56,7 @@ public class BreakpointEventHandler extends Thread {
 	/**
 	 * 
 	 * @param loc the source code location to set the breakpoint at
-	 * @param type BreakpointType, entry or exit
+	 * @param type BreakpointType, only "entry" is currently used
 	 * @throws AbsentInformationException 
 	 */
 	public void addBreakpointAtMethod(Method m, BreakpointType type, boolean enable) throws AbsentInformationException {
@@ -64,7 +66,9 @@ public class BreakpointEventHandler extends Thread {
 			loc = m.location();
 		}
 		else if (type.equals(BreakpointType.EXIT)) {
-			loc = Utils.getEndOfMethodLocation(m);
+			System.err.println("EXIT BreakpointTypes are deprecated! They don't work.");
+			System.exit(-2);
+//			loc = Utils.getEndOfMethodLocation(m);
 		}
 		else {
 			System.err.println("addBreakpoint(): Unsupported BreakpointType = " + type);
@@ -77,6 +81,8 @@ public class BreakpointEventHandler extends Thread {
 			b.enable();
 		}
 		this.breakpoints.add(new BreakpointEntry(b, type, m));
+		
+		System.out.println("Set " + type + " breakpoint at method " + m + ", " + loc);
 	}
 
 
@@ -100,15 +106,17 @@ public class BreakpointEventHandler extends Thread {
 				try
 				{
 					Event evt = evtIter.next();
-					if (evt instanceof BreakpointEvent)
-					{
-						try {
+					try {
+						if (evt instanceof BreakpointEvent) {
 							handleBreakpointEvent((BreakpointEvent)evt);
-						} catch (IncompatibleThreadStateException e) {
-							e.printStackTrace();
+						}
+						else if (evt instanceof MethodExitEvent) {
+							handleMethodExitEvent((MethodExitEvent)evt);
 						}
 					}
-
+					catch (IncompatibleThreadStateException e) {
+						e.printStackTrace();
+					}
 				}
 
 				//				catch (Exception exc)
@@ -134,14 +142,18 @@ public class BreakpointEventHandler extends Thread {
 		// ensure that this breakpoint is one we actually care about and have registered
 		BreakpointEntry be = null;
 		for (BreakpointEntry b : this.breakpoints) {
-			if (b.bReq.equals(bpReq)) {
+			if (b.req.equals(bpReq)) {
 				be = b;
 				break;
 			}
 		}
 		if (be == null)
 			return; 
-					
+				
+		if (!be.type.equals(BreakpointType.ENTRY)) {
+			System.err.println("Error: handleBreakpointEvent() is currently only intended for ENTRY breakpoints, not " + be.type + " breakpoints.");
+			System.exit(-2);
+		}
 		
 		
 		System.out.println("\n=======================================================================");
@@ -152,6 +164,29 @@ public class BreakpointEventHandler extends Thread {
 		StackFrame stackFrame = threadRef.frame(0);
 		ObjectReference currentThis = stackFrame.thisObject(); // dynamic reference to "this" current instance object
 
+		
+		/*
+		 *  Instead of setting "exit" breakpoints on the last line of a method, which doesn't work,
+		 *  we create a method exit request so that when the current method ends, we'll receive the proper event.
+		 *  Note that we want to restrict it to this thread so that nothing else triggers it.
+		 */
+		// first, search for an existing MethodExitRequest so we can re-enable it (if we're already keeping track of it)
+//		BreakpointEntry be = null;
+//		for (BreakpointEntry b : this.breakpoints) {
+//			if (b.req.equals(bpReq)) {
+//				be = b;
+//				break;
+//			}
+//		}
+//		if (be == null)
+		MethodExitRequest mer = this.vm.eventRequestManager().createMethodExitRequest();
+		mer.addThreadFilter(threadRef);
+		mer.enable();
+//		this.breakpoints.add(new BreakpointEntry(mer, BreakpointType.EXIT, bpReq.location().method()));
+		System.out.println("Set EXIT breakpoint at method " + bpReq.location().method());
+		
+		
+		
 		// get call stack
 		System.out.println("    --- Callstack --- ");
 		for (int i = threadRef.frameCount() - 1; i >= 0; i--) 
@@ -191,10 +226,6 @@ public class BreakpointEventHandler extends Thread {
 		capState.dump();
 		capState.visualize();
 
-		if (be.type.equals(BreakpointType.EXIT)) {
-			CapturedState beginState = findMatchingBeginState(capState);
-			compareStates(beginState, capState);
-		}
 
 		// TODO:  could potentially capture the state of a whole service that may span multiple methods that touch different objects. 
 		//        all of those objects should be included
@@ -228,8 +259,40 @@ public class BreakpointEventHandler extends Thread {
 	
 	
 	
+	public void handleMethodExitEvent(MethodExitEvent evt) throws IncompatibleThreadStateException {
+		
+		System.out.println("\n=======================================================================");
+		System.out.println("============ EXIT Breakpoint at line " + evt.location().lineNumber() + "  (" + evt.method().name() + ") ================");
+		System.out.println("=======================================================================");
+		
+		MethodExitRequest request = (MethodExitRequest)evt.request();
+		
+		ThreadReference threadRef = evt.thread();
+		StackFrame stackFrame = threadRef.frame(0);
+		ObjectReference currentThis = stackFrame.thisObject(); // dynamic reference to "this" current instance object
+		
+		BreakpointEntry be = new BreakpointEntry(request, BreakpointType.EXIT, evt.method());
+		CapturedState capState = new CapturedState(threadRef, currentThis, be);
+		this.capturedStates.add(capState);	
+		capState.dump();
+		capState.visualize();
+		
+		/*
+		 *  now that the state has been saved, disable and remove the request,
+		 *  because it's going to be re-created during the next ENTRY breakpoint event handler 
+		 */
+		request.disable();
+		this.vm.eventRequestManager().deleteEventRequest(request);
+		
+		CapturedState beginState = findMatchingBeginState(capState);
+		compareStates(beginState, capState);
+	}
+	
+	
+	
 	/**
-	 * returns the beginning state (at method entry) that matches the given endState
+	 * returns the beginning state (at method entry) that matches the given endState.
+	 * They must be for the same method, the same thread, and the returned state must be an ENTRY breakpoint. 
 	 * @param endState the ending state (at method exit) to match
 	 * @return
 	 */
@@ -252,7 +315,7 @@ public class BreakpointEventHandler extends Thread {
 	
 	
 	public void compareStates(CapturedState beg, CapturedState end) {
-//		compareStatesJOD(beg, end);
+		compareStatesJOD(beg, end);
 		compareStatesJavaUtil(beg, end);
 //		compareStatesJavers(beg, end);
 	}
@@ -307,11 +370,26 @@ public class BreakpointEventHandler extends Thread {
 		});
 		
 		for (Delta d : diffs) {
-			System.out.println(d);
+			Object source = d.getSourceValue();
+			Object target = d.getTargetValue();
+			
+			if (source instanceof VariableNode && target instanceof VariableNode) {
+				VariableNode s = (VariableNode)source;
+				VariableNode t = (VariableNode)target;
+				System.out.println("Delta: " + s.getName() + " changed, old=" + s.getValueAsString() + ", new=" + t.getValueAsString() + "  (" + s.getTypeString() + ")");
+			}
+			else {
+//				System.out.println("unknown type: " + d);
+			}
 		}
 	}
 	
 	
+	/**
+	 * a comparison of state using jaVers, which still doesn't work!
+	 * @param beg
+	 * @param end
+	 */
 	public void compareStatesJavers(CapturedState beg, CapturedState end) {
 		// let's test jaVers here
 		Javers javers = JaversBuilder.javers()
