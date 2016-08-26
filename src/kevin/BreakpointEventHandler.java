@@ -155,14 +155,15 @@ public class BreakpointEventHandler extends Thread {
 			System.exit(-2);
 		}
 		
-		
-		System.out.println("\n=======================================================================");
-		System.out.println("============ " + be.type + " Breakpoint at line " + bpReq.location().lineNumber() + "  (" + bpReq.location().method().name() + ") ================");
-		System.out.println("=======================================================================");
-		
 		ThreadReference threadRef = evt.thread();
 		StackFrame stackFrame = threadRef.frame(0);
 		ObjectReference currentThis = stackFrame.thisObject(); // dynamic reference to "this" current instance object
+		Method currentMethod = bpReq.location().method();
+		
+		System.out.println("\n=======================================================================");
+		System.out.println("============ " + be.type + " Breakpoint at line " + bpReq.location().lineNumber() + "  (" + currentMethod.declaringType() + "." + currentMethod.name() + ") ================");
+		System.out.println("=======================================================================");
+		
 
 		
 		/*
@@ -171,35 +172,27 @@ public class BreakpointEventHandler extends Thread {
 		 *  Note that we want to restrict it to this thread so that nothing else triggers it.
 		 */
 		// first, search for an existing MethodExitRequest so we can re-enable it (if we're already keeping track of it)
-//		BreakpointEntry be = null;
-//		for (BreakpointEntry b : this.breakpoints) {
-//			if (b.req.equals(bpReq)) {
-//				be = b;
-//				break;
-//			}
-//		}
-//		if (be == null)
-		MethodExitRequest mer = this.vm.eventRequestManager().createMethodExitRequest();
-		mer.addThreadFilter(threadRef);
-		mer.enable();
-//		this.breakpoints.add(new BreakpointEntry(mer, BreakpointType.EXIT, bpReq.location().method()));
-		System.out.println("Set EXIT breakpoint at method " + bpReq.location().method());
-		
-		
-		
-		// get call stack
-		System.out.println("    --- Callstack --- ");
-		for (int i = threadRef.frameCount() - 1; i >= 0; i--) 
-		{
-			StackFrame sf = threadRef.frame(i);
-			try {
-				System.out.println("        " + sf.location().declaringType().name() + " : " + sf.location().method().name() + "  (" + sf.location().sourceName() + " : " + sf.location().lineNumber() + ")");
-			} catch (AbsentInformationException e) {
-				System.err.println("AbsentInformationException: did you compile your target application with -g option?");
-				e.printStackTrace();
+		BreakpointEntry mthdExit = null;
+		for (BreakpointEntry e : this.breakpoints) {
+			if (e.mthd.equals(currentMethod) && 
+				e.type.equals(BreakpointType.EXIT)) {
+				mthdExit = e;
+				break;
 			}
 		}
-		System.out.println("\n");
+		if (mthdExit == null)
+			this.breakpoints.add(new BreakpointEntry(null, BreakpointType.EXIT, currentMethod));
+		
+		MethodExitRequest mer = this.vm.eventRequestManager().createMethodExitRequest();
+		mer.addThreadFilter(threadRef);
+		mer.addInstanceFilter(currentThis);
+		// could also add referencetype filter just for this class
+		mer.setSuspendPolicy(BreakpointRequest.SUSPEND_ALL);
+		mer.enable();
+		System.out.println("Set EXIT breakpoint at method " + currentMethod.name());
+		
+		
+		Utils.dumpCallStack(threadRef);
 
 
 		/*
@@ -260,16 +253,32 @@ public class BreakpointEventHandler extends Thread {
 	
 	
 	public void handleMethodExitEvent(MethodExitEvent evt) throws IncompatibleThreadStateException {
+		// first, check to see if we've stopped at a method that we actually care about
+		// methods we care about should each have a BreakpointEntry created for them
+		boolean isMethodOfInterest = false;
+		for (BreakpointEntry e : this.breakpoints) {
+			if (e.mthd.equals(evt.method()) && 
+				e.type.equals(BreakpointType.EXIT)) {
+				isMethodOfInterest = true;
+				break;
+			}
+		}
+		if (!isMethodOfInterest) {
+			System.out.println("\n--> stopped at method exit for don't care method " + evt.method().declaringType() + "." + evt.method().name());
+			return;
+		}
 		
 		System.out.println("\n=======================================================================");
-		System.out.println("============ EXIT Breakpoint at line " + evt.location().lineNumber() + "  (" + evt.method().name() + ") ================");
+		System.out.println("============ EXIT Breakpoint at line " + evt.location().lineNumber() + "  (" + evt.method().declaringType() + "." + evt.method().name() + ") ================");
 		System.out.println("=======================================================================");
-		
-		MethodExitRequest request = (MethodExitRequest)evt.request();
 		
 		ThreadReference threadRef = evt.thread();
 		StackFrame stackFrame = threadRef.frame(0);
 		ObjectReference currentThis = stackFrame.thisObject(); // dynamic reference to "this" current instance object
+		
+		Utils.dumpCallStack(threadRef);
+		
+		MethodExitRequest request = (MethodExitRequest)evt.request();
 		
 		BreakpointEntry be = new BreakpointEntry(request, BreakpointType.EXIT, evt.method());
 		CapturedState capState = new CapturedState(threadRef, currentThis, be);
@@ -352,6 +361,8 @@ public class BreakpointEventHandler extends Thread {
 		    	System.out.println(node.getPath() + " => " + node.getState());
 		    }
 		});
+		
+		System.out.println("\n---- finished printing java-object-diff changes ----\n\n");
 	}
 	
 	
@@ -382,6 +393,8 @@ public class BreakpointEventHandler extends Thread {
 //				System.out.println("unknown type: " + d);
 			}
 		}
+		
+		System.out.println("\n---- finished printing java-util GraphComparator changes ----\n\n");
 	}
 	
 	

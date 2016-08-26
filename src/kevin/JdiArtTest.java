@@ -116,7 +116,7 @@ public class JdiArtTest {
 			String className = "com.android.server.clipboard.ClipboardService";
 			String methodName = "onTransact";
 			
-			System.out.println(Utils.findMatchingClasses(vm, "Clipboard"));
+//			System.out.println(Utils.findMatchingClasses(vm, "Clipboard"));
 			
 			ReferenceType classRef = vm.classesByName(className).get(0);
 			Method mthd = classRef.methodsByName(methodName).get(0);
