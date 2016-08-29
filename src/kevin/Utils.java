@@ -299,10 +299,10 @@ public class Utils {
 
 		for (ReferenceType c : vm.allClasses())
 		{
-			sb.append(c);
+			sb.append(c + "\n");
 			if (includeMethods) {
 				for (Method m : c.methods())
-					sb.append("   " + m);
+					sb.append("   " + m + "\n");
 			}
 		}
 

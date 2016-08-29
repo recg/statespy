@@ -45,19 +45,37 @@ public class CapturedState {
 	 */
 	BreakpointEntry entry;
 
+	/**
+	 * the maximum depth to recurse down through the object graph
+	 */
+	int maxDepth;
+	public static int DEFAULT_MAX_DEPTH = 10;
 
 	
-	public CapturedState(ThreadReference thr, ObjectReference obj, BreakpointEntry e) {
+	public CapturedState(ThreadReference thr, ObjectReference obj, BreakpointEntry e, int md) {
 		this.threadRef = thr;
 		this.entry = e;
+		
+		if (maxDepth >= 0) {
+			this.maxDepth = md;
+		}
 		
 		captureObjectState(obj);	
 	}
 	
-
+	
+	public CapturedState(ThreadReference thr, ObjectReference obj, BreakpointEntry e) {
+		this(thr, obj, e, DEFAULT_MAX_DEPTH);
+	}
+	
 	
 	public void captureObjectState(Value object) {
-		rootObject = captureState(object, "this (top-level)", object.type().name(), null, 0, 4, true);
+		long start = System.currentTimeMillis();
+
+		rootObject = captureState(object, "this (top-level)", object.type().name(), null, 0, this.maxDepth, true);
+		
+		long elapsed = System.currentTimeMillis() - start;
+		System.out.println("Captured state in " + ((float)elapsed/1000.0f) + " seconds.");
 	}
 	
 	

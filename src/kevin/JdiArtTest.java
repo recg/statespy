@@ -97,7 +97,7 @@ public class JdiArtTest {
 
 		public static void main(String[] args) throws Exception
 		{
-			boolean firstPid = true; // true selects the system service
+			boolean firstPid = true; // "true" selects the system service, "false" selects the latest JDWP-enabled process 
 			int chosenTcpPort = 8888;
 	
 			ArrayList<Integer> pids = Utils.getJdwpPids();
@@ -107,7 +107,7 @@ public class JdiArtTest {
 			VirtualMachine vm = Utils.connectToDebuggeeJVM(chosenTcpPort);
 	
 	
-//			Utils.dumpAllClasses(vm);
+//			System.out.println(Utils.getAllClasses(vm, true));
 			
 			BreakpointEventHandler bkptHandler = new BreakpointEventHandler(vm);
 			
@@ -116,7 +116,12 @@ public class JdiArtTest {
 			String className = "com.android.server.clipboard.ClipboardService";
 			String methodName = "onTransact";
 			
-//			System.out.println(Utils.findMatchingClasses(vm, "Clipboard"));
+			
+//			String className = "com.android.server.AlarmManagerService$Constants";
+//			String methodName = "onChange";
+			
+			
+//			System.out.println(Utils.findMatchingClasses(vm, "onChange"));
 			
 			ReferenceType classRef = vm.classesByName(className).get(0);
 			Method mthd = classRef.methodsByName(methodName).get(0);

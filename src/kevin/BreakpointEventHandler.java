@@ -281,10 +281,8 @@ public class BreakpointEventHandler extends Thread {
 		MethodExitRequest request = (MethodExitRequest)evt.request();
 		
 		BreakpointEntry be = new BreakpointEntry(request, BreakpointType.EXIT, evt.method());
-		CapturedState capState = new CapturedState(threadRef, currentThis, be);
-		this.capturedStates.add(capState);	
-		capState.dump();
-		capState.visualize();
+		final CapturedState capState = new CapturedState(threadRef, currentThis, be);
+		this.capturedStates.add(capState);
 		
 		/*
 		 *  now that the state has been saved, disable and remove the request,
@@ -293,8 +291,19 @@ public class BreakpointEventHandler extends Thread {
 		request.disable();
 		this.vm.eventRequestManager().deleteEventRequest(request);
 		
-		CapturedState beginState = findMatchingBeginState(capState);
-		compareStates(beginState, capState);
+		
+		// in order to minimize the time that the remote JVM is paused, run the rest of the stuff in a new thread
+		Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				capState.dump();
+				capState.visualize();		
+				CapturedState beginState = findMatchingBeginState(capState);
+				compareStates(beginState, capState);
+			}
+		});
+		t.start();
+
 	}
 	
 	
