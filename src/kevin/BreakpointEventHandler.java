@@ -392,7 +392,7 @@ public class BreakpointEventHandler extends Thread {
 		for (Delta d : diffs) {
 			Object source = d.getSourceValue();
 			Object target = d.getTargetValue();
-			
+
 			if (source instanceof VariableNode && target instanceof VariableNode) {
 				VariableNode s = (VariableNode)source;
 				VariableNode t = (VariableNode)target;

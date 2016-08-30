@@ -6,7 +6,11 @@ import java.util.List;
 import javax.swing.JTree;
 
 import com.sun.jdi.ArrayReference;
+import com.sun.jdi.ClassNotLoadedException;
 import com.sun.jdi.Field;
+import com.sun.jdi.IncompatibleThreadStateException;
+import com.sun.jdi.InvalidTypeException;
+import com.sun.jdi.InvocationException;
 import com.sun.jdi.Method;
 import com.sun.jdi.ObjectReference;
 import com.sun.jdi.PrimitiveValue;
@@ -142,6 +146,8 @@ public class CapturedState {
             	ObjectReference objectRef = (ObjectReference) obj;
             	
             	VariableNode varnode = new VariableNode(fieldName, objectRef.type().name(), objectRef, parent);
+//            	if (objectRef.type().name().contains("android.text.SpannableString"))
+        		varnode.obtainStringifiedValue(objectRef, threadRef);
             	this.objectToNodeMap.put(obj, varnode);
                 
                 // capture the fields of this object

@@ -48,17 +48,12 @@ import objectnodes.VariableNode;
 
 
 // https://dzone.com/articles/generating-minable-event
-//http://wayne-adams.blogspot.com/search?q=JDI
-// http://stackoverflow.com/questions/8700988/java-debug-interface-put-the-breakpoints-at-arbitrary-locations-in-the-code
-
-// how to monitor classloaders: http://www.jguru.com/faq/view.jsp?EID=463990
 
 // a bunch of JDI snippets: http://www.programcreek.com/java-api-examples/index.php?api=com.sun.jdi.Field
 
 // may be useful: http://stackoverflow.com/questions/35420987/how-do-you-set-a-breakpoint-before-executing
 
 // http://alvinalexander.com/java/jwarehouse/eclipse/org.eclipse.jdt.debug.jdi.tests/tests/org/eclipse/debug/jdi/tests/ObjectReferenceTest.java.shtml
-// http://stackoverflow.com/questions/24236361/jdi-objectreference-setvalue-on-an-inherited-field
 
 
 // check out pg 10:  https://fivedots.coe.psu.ac.th/~ad/jg/javaArt3/traceJPDA.pdf

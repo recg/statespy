@@ -23,22 +23,27 @@
 
 package objectnodes;
 
-import com.sun.jdi.ArrayReference;
-import com.sun.jdi.IntegerValue;
-import com.sun.jdi.ObjectReference;
-import com.sun.jdi.PrimitiveValue;
-import com.sun.jdi.StringReference;
-import com.sun.jdi.Value;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 import org.javers.core.metamodel.annotation.DiffIgnore;
-import org.javers.core.metamodel.annotation.Id;
-import org.javers.core.metamodel.annotation.ValueObject;
+
+import com.sun.jdi.ArrayReference;
+import com.sun.jdi.ClassNotLoadedException;
+import com.sun.jdi.IncompatibleThreadStateException;
+import com.sun.jdi.InvalidTypeException;
+import com.sun.jdi.InvocationException;
+import com.sun.jdi.Method;
+import com.sun.jdi.ObjectReference;
+import com.sun.jdi.PrimitiveValue;
+import com.sun.jdi.StringReference;
+import com.sun.jdi.ThreadReference;
+import com.sun.jdi.Value;
 
 /**
  * Model for a variable in the variable inspector. Has a type and name and
@@ -49,6 +54,8 @@ import org.javers.core.metamodel.annotation.ValueObject;
  */
 public class VariableNode implements MutableTreeNode {
 
+	private static ArrayList<Value> emptyArgs = new ArrayList<Value>();
+	
 	public static final int TYPE_UNKNOWN = -1;
 	public static final int TYPE_OBJECT = 0;
 	public static final int TYPE_ARRAY = 1;
@@ -67,6 +74,7 @@ public class VariableNode implements MutableTreeNode {
 	protected String name;
 
 	protected Value value;
+	protected String stringifiedValue;
 	protected List<VariableNode> children = new ArrayList<>();
 	
 	@DiffIgnore
@@ -89,6 +97,40 @@ public class VariableNode implements MutableTreeNode {
 		this.parent = parent;
 	}
 
+	/**
+	 * Gets the actual value of the mirror object on the target JVM 
+	 * by invoking <code>toString()</code> on the Value in this VariableNode.
+	 * Sets the internal VariableNode's     
+	 * @param o 
+	 * @param t 
+	 * @return the String value or null if it cannot be acquired
+	 */
+	public void obtainStringifiedValue(ObjectReference o, ThreadReference t) {
+    	try {
+    		Method toStringMethod = o.referenceType().methodsByName("toString").get(0);
+			Value v = o.invokeMethod(t, toStringMethod, emptyArgs, ObjectReference.INVOKE_SINGLE_THREADED);
+			if (v instanceof StringReference) {
+				this.stringifiedValue = ((StringReference) v).value();
+				return;
+			}
+			else {
+				this.stringifiedValue = null;
+			}
+		} catch (InvalidTypeException e) {
+//			e.printStackTrace();
+		} catch (ClassNotLoadedException e) {
+//			e.printStackTrace();
+		} catch (IncompatibleThreadStateException e) {
+//			e.printStackTrace();
+		} catch (InvocationException e) {
+//			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+//    		e.printStackTrace();
+		}
+    	
+    	this.stringifiedValue = null;
+	}
+	
 	public void setValue(Value value) {
 		this.value = value;
 	}
@@ -98,7 +140,8 @@ public class VariableNode implements MutableTreeNode {
 	}
 
 	/**
-	 * Get a String representation of this variable nodes value.
+	 * Get a String representation of this VariableNode's Value.
+	 * This is used by the JTree visualization libraries.
 	 *
 	 * @return a String representing the value.
 	 */
@@ -118,7 +161,12 @@ public class VariableNode implements MutableTreeNode {
 		}
 
 		if (this.value instanceof ObjectReference) {
-			return "instance of " + this.type;
+			if (this.stringifiedValue == null) {
+				return "instance of " + this.type + " (" + this.value.toString() + ")";
+			}
+			else { 
+				return this.stringifiedValue;
+			}
 		}
 
 		//
