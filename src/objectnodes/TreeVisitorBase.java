@@ -1,15 +1,6 @@
 package objectnodes;
 
 import java.util.HashSet;
-import java.util.List;
-
-import com.sun.crypto.provider.AESParameters;
-import com.sun.jdi.ArrayReference;
-import com.sun.jdi.Field;
-import com.sun.jdi.ObjectReference;
-import com.sun.jdi.PrimitiveValue;
-import com.sun.jdi.StringReference;
-import com.sun.jdi.Value;
 
 public class TreeVisitorBase {
 

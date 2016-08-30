@@ -5,24 +5,21 @@
 			<attribute name="javadoc_location" value="file:/usr/lib/jvm/java-7-oracle/docs/jdk/api/jpda/jdi/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="jaVers_jars/gson-2.5.jar"/>
-	<classpathentry kind="lib" path="jaVers_jars/joda-time-2.3.jar"/>
-	<classpathentry kind="lib" path="jaVers_jars/picocontainer-2.14.3.jar"/>
-	<classpathentry kind="lib" path="jaVers_jars/javers-core-2.1.1.jar">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/JDI_State_Spill/jaVers_jars/javers-core-2.1.1-javadoc.jar!/"/>
+			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="java-object-diff_jars/java-object-diff-0.94.jar"/>
-	<classpathentry kind="lib" path="java-object-diff_jars/slf4j-api-1.7.18.jar"/>
-	<classpathentry kind="lib" path="java-util_jars/java-util-1.24.0.jar" sourcepath="java-util_jars/java-util-1.24.0-sources.jar">
+	<classpathentry kind="src" output="target/classes" path="src">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/JDI_State_Spill/java-util_jars/java-util-1.24.0-javadoc.jar!/"/>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="java-util_jars/log4j-api-2.5.jar"/>
-	<classpathentry kind="lib" path="java-util_jars/log4j-core-2.5.jar"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>

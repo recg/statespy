@@ -1,48 +1,10 @@
 package kevin;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
-import org.javers.core.Javers;
-import org.javers.core.JaversBuilder;
-import org.javers.core.diff.Diff;
-
-import com.sun.jdi.BooleanValue;
-import com.sun.jdi.Bootstrap;
-import com.sun.jdi.ByteValue;
-import com.sun.jdi.CharValue;
-import com.sun.jdi.DoubleValue;
-import com.sun.jdi.Field;
-import com.sun.jdi.FloatValue;
-import com.sun.jdi.IntegerValue;
-import com.sun.jdi.Location;
-import com.sun.jdi.LongValue;
 import com.sun.jdi.Method;
-import com.sun.jdi.ObjectReference;
 import com.sun.jdi.ReferenceType;
-import com.sun.jdi.ShortValue;
-import com.sun.jdi.StackFrame;
-import com.sun.jdi.StringReference;
-import com.sun.jdi.ThreadReference;
-import com.sun.jdi.Value;
 import com.sun.jdi.VirtualMachine;
-import com.sun.jdi.VirtualMachineManager;
-import com.sun.jdi.connect.AttachingConnector;
-import com.sun.jdi.connect.Connector;
-import com.sun.jdi.connect.IllegalConnectorArgumentsException;
-import com.sun.jdi.event.BreakpointEvent;
-import com.sun.jdi.event.Event;
-import com.sun.jdi.event.EventIterator;
-import com.sun.jdi.event.EventQueue;
-import com.sun.jdi.event.EventSet;
-import com.sun.jdi.request.BreakpointRequest;
-import com.sun.jdi.request.EventRequest;
-
-import objectnodes.VariableNode;
 
 
 
