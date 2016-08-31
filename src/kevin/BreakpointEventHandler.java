@@ -333,8 +333,10 @@ public class BreakpointEventHandler extends Thread {
 	
 	
 	public void compareStates(CapturedState beg, CapturedState end) {
-		compareStatesJOD(beg, end);
+//		compareStatesJOD(beg, end);
+		
 		compareStatesJavaUtil(beg, end);
+		
 //		compareStatesJavers(beg, end);
 	}
 
@@ -396,7 +398,29 @@ public class BreakpointEventHandler extends Thread {
 			if (source instanceof VariableNode && target instanceof VariableNode) {
 				VariableNode s = (VariableNode)source;
 				VariableNode t = (VariableNode)target;
-				System.out.println("Delta: " + s.getName() + " changed, old=" + s.getValueAsString() + ", new=" + t.getValueAsString() + "  (" + s.getTypeString() + ")");
+				System.out.println(s.getName() + " changed, old=" + s.getValueAsString() + ", new=" + t.getValueAsString() + "  (" + s.getTypeString() + ")");
+				List<VariableNode> hierarchy = new ArrayList<VariableNode>();
+				VariableNode parent = s;
+				do {
+					hierarchy.add(parent);
+					if (parent != null) {
+						parent = (VariableNode) parent.getParent();
+					}
+					else {
+						break;
+					}
+				} while (true);
+				System.out.print("      ");
+				for (int i = hierarchy.size() - 1; i >= 0; i--) {
+					VariableNode n = hierarchy.get(i);
+					if (n == null) {
+						System.out.print("null -> ");
+					}
+					else {
+						System.out.print(n.getName() + " -> ");
+					}
+				}
+				System.out.println();
 			}
 			else {
 //				System.out.println("unknown type: " + d);
