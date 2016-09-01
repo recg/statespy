@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -13,14 +14,19 @@ import com.sun.jdi.Bootstrap;
 import com.sun.jdi.ByteValue;
 import com.sun.jdi.CharValue;
 import com.sun.jdi.ClassNotLoadedException;
+import com.sun.jdi.ClassObjectReference;
+import com.sun.jdi.ClassType;
 import com.sun.jdi.DoubleValue;
 import com.sun.jdi.Field;
 import com.sun.jdi.FloatValue;
 import com.sun.jdi.IncompatibleThreadStateException;
 import com.sun.jdi.IntegerValue;
+import com.sun.jdi.InvalidTypeException;
+import com.sun.jdi.InvocationException;
 import com.sun.jdi.Location;
 import com.sun.jdi.LongValue;
 import com.sun.jdi.Method;
+import com.sun.jdi.ObjectReference;
 import com.sun.jdi.PrimitiveType;
 import com.sun.jdi.ReferenceType;
 import com.sun.jdi.ShortValue;
@@ -35,8 +41,29 @@ import com.sun.jdi.connect.AttachingConnector;
 import com.sun.jdi.connect.Connector;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 
+
 public class Utils {
 
+	
+	/**
+	 * a reference to the target JVM's static "Class" identifier,
+	 * which we will use to invoke <code>Class.forName()</code> on the target JVM
+	 * to force it to load a particular class.
+	 * Only need to obtain this once at the beginning, 
+	 * then we can save it for repeated future use. 
+	 */
+	private static ClassType targetJvmClass = null;
+	
+	/**
+	 * pairs with the {@link targetJvmClass} above
+	 * A static reference to the <code>Class.forName()</code> method on the target JVM. 
+	 * Used as a dirty hack to load classes into the remote JVM on demand. 
+	 */
+	private static Method targetJvmForName = null;
+	
+	private static HashSet<String> loadedClasses = new HashSet<String>();
+	
+	
 
 	public static boolean shouldExcludeElement(String name, Type staticType, Type runtimeType) {
 		return (runtimeType.name().contains("com.android.server.am.ActivityManagerService") || 
@@ -152,8 +179,55 @@ public class Utils {
 
 
 
-	public static VirtualMachine connectToDebuggeeJVM(int tcpPort) throws IOException, IllegalConnectorArgumentsException
-	{
+	/**
+	 * returns true <i>only the very first time</i> that the class was newly loaded. 
+	 * Repeated attempts will return false because the class would already have been loaded.
+	 * @param ref
+	 * @param classToLoad
+	 * @return
+	 */
+	public static boolean loadClassInTargetJvm(ThreadReference ref, String classToLoad) {
+		if (classToLoad == null)
+			return false;
+		
+		// don't repeatedly attempt to load the same class
+		if (loadedClasses.contains(classToLoad))
+			return false; 
+		
+		if (targetJvmClass == null) {
+			targetJvmClass = (ClassType) ref.virtualMachine().classesByName("java.lang.Class").get(0);
+		}
+		if (targetJvmForName == null) {
+			targetJvmForName = targetJvmClass.methodsByName("forName", "(Ljava/lang/String;)Ljava/lang/Class;").get(0);
+		}
+		if (targetJvmClass == null || targetJvmForName == null) {
+			return false; 
+		}
+
+		List<Value> args = new ArrayList<Value>();
+		args.add(ref.virtualMachine().mirrorOf(classToLoad));
+		try {
+			Value result = targetJvmClass.invokeMethod(ref, targetJvmForName, args, ObjectReference.INVOKE_SINGLE_THREADED);
+			if (result instanceof ClassObjectReference) { 
+				if (((ClassObjectReference)result).reflectedType().name().contains(classToLoad)) {
+					loadedClasses.add(classToLoad);
+					return true;
+				}
+			}
+		} catch (InvalidTypeException | ClassNotLoadedException | IncompatibleThreadStateException
+				| InvocationException e) {
+			return false;
+		}
+		
+		return false;
+	}
+
+	
+	public static VirtualMachine connectToDebuggeeJVM(int tcpPort) throws IOException, IllegalConnectorArgumentsException {
+		return connectToDebuggeeJVM("localhost", tcpPort);
+	}
+
+	public static VirtualMachine connectToDebuggeeJVM(String hostname, int tcpPort) throws IOException, IllegalConnectorArgumentsException {
 		VirtualMachineManager vmMgr = Bootstrap.virtualMachineManager();
 		AttachingConnector socketConnector = null;
 		for (AttachingConnector ac: vmMgr.attachingConnectors())

@@ -27,7 +27,7 @@ public class SwingTree extends JFrame {
 	Renderer renderer = new Renderer();
 
 
-	public SwingTree(MutableTreeNode root) {
+	public SwingTree(MutableTreeNode root, String windowTitle) {
 		tree = new JTree(root);
 
 		tree.putClientProperty("JTree.lineStyle", "Angled");
@@ -41,6 +41,7 @@ public class SwingTree extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		setSize(800, 500);
+		this.setTitle(windowTitle);
 		setVisible(true);
 	}
 

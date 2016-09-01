@@ -35,6 +35,8 @@ import org.javers.core.metamodel.annotation.DiffIgnore;
 
 import com.sun.jdi.ArrayReference;
 import com.sun.jdi.ClassNotLoadedException;
+import com.sun.jdi.ClassNotPreparedException;
+import com.sun.jdi.ClassType;
 import com.sun.jdi.IncompatibleThreadStateException;
 import com.sun.jdi.InvalidTypeException;
 import com.sun.jdi.InvocationException;
@@ -44,6 +46,9 @@ import com.sun.jdi.PrimitiveValue;
 import com.sun.jdi.StringReference;
 import com.sun.jdi.ThreadReference;
 import com.sun.jdi.Value;
+import com.sun.tools.jdi.StringReferenceImpl;
+
+import kevin.Utils;
 
 /**
  * Model for a variable in the variable inspector. Has a type and name and
@@ -55,6 +60,8 @@ import com.sun.jdi.Value;
 public class VariableNode implements MutableTreeNode {
 
 	private static ArrayList<Value> emptyArgs = new ArrayList<Value>();
+	
+
 	
 	public static final int TYPE_UNKNOWN = -1;
 	public static final int TYPE_OBJECT = 0;
@@ -69,6 +76,9 @@ public class VariableNode implements MutableTreeNode {
 	public static final int TYPE_BYTE = 9;
 	public static final int TYPE_SHORT = 10;
 	public static final int TYPE_VOID = 11;
+	
+	// must use this signature to avoid finding static toString methods like Integer.toString(int)
+	public static final String METHOD_SIGNATURE_TO_STRING = "()Ljava/lang/String;";
 
 	protected String type;
 	protected String name;
@@ -105,31 +115,52 @@ public class VariableNode implements MutableTreeNode {
 	 * @param t 
 	 * @return the String value or null if it cannot be acquired
 	 */
-	public void obtainStringifiedValue(ObjectReference o, ThreadReference t) {
+	public boolean obtainStringifiedValue(ObjectReference o, ThreadReference t) {
+		Method toStringMethod = null;
+		try {
+			toStringMethod = o.referenceType().methodsByName("toString", METHOD_SIGNATURE_TO_STRING).get(0);
+		} catch (ClassNotPreparedException | IndexOutOfBoundsException e) {
+			String msg = e.getMessage();
+		}
+		if (toStringMethod == null) {
+			System.err.println(o.referenceType().name() + " does not have a toString() method!");
+			return false;
+		}
+		
     	try {
-    		Method toStringMethod = o.referenceType().methodsByName("toString").get(0);
 			Value v = o.invokeMethod(t, toStringMethod, emptyArgs, ObjectReference.INVOKE_SINGLE_THREADED);
 			if (v instanceof StringReference) {
 				this.stringifiedValue = ((StringReference) v).value();
-				return;
+				return true;
 			}
-			else {
-				this.stringifiedValue = null;
+		} catch (InvalidTypeException | ClassNotLoadedException | IncompatibleThreadStateException  | 
+				 InvocationException | IllegalArgumentException e) {
+			
+			/*
+			 *  So i actually tried this, and it never once is actually useful, so I'm disabling it for now. 
+			 *
+			 *
+			//  here: an exception usually means the class wasn't loaded in the target JVM
+			// so try to load it, and if we can load it, try to get the stringified value again
+			boolean successfullyLoadedClass = Utils.loadClassInTargetJvm(t, o.referenceType().name());
+			if (successfullyLoadedClass) {
+				boolean succeededSecondTry = obtainStringifiedValue(o, t);
+				if (succeededSecondTry) {
+					System.out.println("Succeeded second try");
+					return true;
+				}
+				else {
+					return false;
+				}
 			}
-		} catch (InvalidTypeException e) {
-//			e.printStackTrace();
-		} catch (ClassNotLoadedException e) {
-//			e.printStackTrace();
-		} catch (IncompatibleThreadStateException e) {
-//			e.printStackTrace();
-		} catch (InvocationException e) {
-//			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-//    		e.printStackTrace();
+			*
+			*/
 		}
     	
     	this.stringifiedValue = null;
+    	return false;
 	}
+	
 	
 	public void setValue(Value value) {
 		this.value = value;

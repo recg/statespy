@@ -189,7 +189,9 @@ public class CapturedState {
     
     
     public void visualize() {
-    	SwingTree treeView = new SwingTree(this.rootObject);
+    	String windowTitle = this.entry.mthd.name() + " " + this.entry.type.toString() + 
+    						 "(" + this.entry.mthd.declaringType() + ")";
+    	SwingTree treeView = new SwingTree(this.rootObject, windowTitle);
     }
     
     
