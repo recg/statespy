@@ -5,6 +5,30 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>JDI_State_Spill</name>
   <description>Detects state spill in Android System Services via JDI</description>
+  <!--<profiles>-->
+    <!--<profile>-->
+      <!--<id>default-tools.jar</id>-->
+      <!--<activation>-->
+        <!--<file>-->
+          <!--<exists>${java.home}/../lib/tools.jar</exists>-->
+        <!--</file>-->
+      <!--</activation>-->
+      <!--<properties>-->
+        <!--<tools.jar>${java.home}/../lib/tools.jar</tools.jar>-->
+      <!--</properties>-->
+    <!--</profile>-->
+    <!--<profile>-->
+      <!--<id>default-tools.jar-mac</id>-->
+      <!--<activation>-->
+        <!--<file>-->
+          <!--<exists>${java.home}/../Classes/classes.jar</exists>-->
+        <!--</file>-->
+      <!--</activation>-->
+      <!--<properties>-->
+        <!--<tools.jar>${java.home}/../Classes/classes.jar</tools.jar>-->
+      <!--</properties>-->
+    <!--</profile>-->
+  <!--</profiles>-->
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
@@ -16,9 +40,32 @@
           <target>1.7</target>
         </configuration>
       </plugin>
-    </plugins>
+          <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>exec-maven-plugin</artifactId>
+              <version>1.2.1</version>
+              <configuration>
+                  <mainClass>kevin.JdiArtTest</mainClass>
+              </configuration>
+          </plugin>
+          </plugins>
   </build>
+
   <dependencies>
+    <dependency>
+		  <groupId>com.sun</groupId>
+		  <artifactId>tools</artifactId>
+		  <version>1.7</version>
+      <scope>system</scope>
+		  <systemPath>/usr/lib/jvm/java-7-oracle/lib/tools.jar</systemPath>
+	  </dependency>
+    <dependency>
+		  <groupId>com.sun.awt</groupId>
+		  <artifactId>rt</artifactId>
+		  <version>1.7</version>
+      <scope>system</scope>
+		  <systemPath>/usr/lib/jvm/java-7-oracle/jre/lib/rt.jar</systemPath>
+	  </dependency>
   	<dependency>
   		<groupId>org.javers</groupId>
   		<artifactId>javers-core</artifactId>

@@ -154,7 +154,7 @@ public class Utils {
 	 * @return the PID of the first JDWP-enabled process on the 
 	 */
 	public static ArrayList<Integer> getJdwpPids() {
-		String output = runShellCommand("/home/kevin/android/android-sdk-linux/platform-tools/adb jdwp");
+		String output = runShellCommand("/home/delmilio/Android/Sdk/platform-tools/adb jdwp");
 
 		ArrayList<Integer> pids = new ArrayList<Integer>();
 		for (String s : output.split("\\s"))
@@ -173,7 +173,7 @@ public class Utils {
 	 */
 	public static boolean forwardAdbPort(int tcpPort, int jdwpPid) {
 		// doesn't handle errors yet
-		runShellCommand("/home/kevin/android/android-sdk-linux/platform-tools/adb forward tcp:" + tcpPort + " jdwp:" + jdwpPid);
+		runShellCommand("/home/delmilio/Android/Sdk/platform-tools/adb forward tcp:" + tcpPort + " jdwp:" + jdwpPid);
 		return true;
 	}
 
