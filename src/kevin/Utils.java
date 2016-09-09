@@ -68,13 +68,13 @@ public class Utils {
 	public static boolean shouldExcludeElement(String name, Type staticType, Type runtimeType) {
 		return (runtimeType.name().contains("com.android.server.am.ActivityManagerService") || 
 				runtimeType.name().contains("com.android.server.pm.UserManagerService") ||
-				runtimeType.name().contains("com.android.server.pm.PackageManagerService") ||
-				runtimeType.name().contains("android.app.ApplicationPackageManager") ||
-				runtimeType.name().contains("com.android.server.am.UriPermissionOwner") || 
+//				runtimeType.name().contains("com.android.server.pm.PackageManagerService") ||
+//				runtimeType.name().contains("android.app.ApplicationPackageManager") ||
+//				runtimeType.name().contains("com.android.server.am.UriPermissionOwner") || 
 				runtimeType.name().contains("android.app.AppOpsManager") ||
-				runtimeType.name().contains("android.app.ContextImpl") ||
+//				runtimeType.name().contains("android.app.ContextImpl") ||
 
-				// always exclude this GC stuff
+				// always exclude this GC-related stuff
 				name.contains("shadow$_klass_") || 
 				name.contains("shadow$_monitor_")
 				);

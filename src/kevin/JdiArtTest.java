@@ -76,10 +76,6 @@ public class JdiArtTest {
 			String methodName = "onTransact";
 			
 			
-//			String className = "com.android.server.AlarmManagerService$Constants";
-//			String methodName = "onChange";
-			
-			
 //			System.out.println(Utils.findMatchingClasses(vm, "onChange"));
 			
 			ReferenceType classRef = vm.classesByName(className).get(0);
