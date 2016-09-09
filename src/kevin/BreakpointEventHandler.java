@@ -378,6 +378,10 @@ public class BreakpointEventHandler extends Thread {
 	
 	
 	public void compareStatesJavaUtil(CapturedState beg, CapturedState end) {
+		
+		System.out.println("\n---- starting to print java-util GraphComparator changes ----\n\n");
+		
+		
 		List<Delta> diffs = GraphComparator.compare(beg.getRootObject(), end.getRootObject(), new ID() {
 			@Override
 			public Object getId(Object objectToId) {
@@ -413,10 +417,7 @@ public class BreakpointEventHandler extends Thread {
 				System.out.print("      ");
 				for (int i = hierarchy.size() - 1; i >= 0; i--) {
 					VariableNode n = hierarchy.get(i);
-					if (n == null) {
-						System.out.print("null -> ");
-					}
-					else {
+					if (n != null) {
 						System.out.print(n.getName() + " -> ");
 					}
 				}

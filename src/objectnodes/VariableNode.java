@@ -26,6 +26,7 @@ package objectnodes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.swing.tree.MutableTreeNode;
@@ -36,19 +37,16 @@ import org.javers.core.metamodel.annotation.DiffIgnore;
 import com.sun.jdi.ArrayReference;
 import com.sun.jdi.ClassNotLoadedException;
 import com.sun.jdi.ClassNotPreparedException;
-import com.sun.jdi.ClassType;
 import com.sun.jdi.IncompatibleThreadStateException;
 import com.sun.jdi.InvalidTypeException;
 import com.sun.jdi.InvocationException;
 import com.sun.jdi.Method;
+import com.sun.jdi.ObjectCollectedException;
 import com.sun.jdi.ObjectReference;
 import com.sun.jdi.PrimitiveValue;
 import com.sun.jdi.StringReference;
 import com.sun.jdi.ThreadReference;
 import com.sun.jdi.Value;
-import com.sun.tools.jdi.StringReferenceImpl;
-
-import kevin.Utils;
 
 /**
  * Model for a variable in the variable inspector. Has a type and name and
@@ -60,7 +58,7 @@ import kevin.Utils;
 public class VariableNode implements MutableTreeNode {
 
 	private static ArrayList<Value> emptyArgs = new ArrayList<Value>();
-	
+	private static HashSet<String> typesWithInvalidToString = new HashSet<String>();
 
 	
 	public static final int TYPE_UNKNOWN = -1;
@@ -116,6 +114,11 @@ public class VariableNode implements MutableTreeNode {
 	 * @return the String value or null if it cannot be acquired
 	 */
 	public boolean obtainStringifiedValue(ObjectReference o, ThreadReference t) {
+		if (typesWithInvalidToString.contains(o.referenceType().name())) {
+			this.stringifiedValue = null;
+			return false;
+		}
+			
 		Method toStringMethod = null;
 		try {
 			toStringMethod = o.referenceType().methodsByName("toString", METHOD_SIGNATURE_TO_STRING).get(0);
@@ -134,8 +137,10 @@ public class VariableNode implements MutableTreeNode {
 				return true;
 			}
 		} catch (InvalidTypeException | ClassNotLoadedException | IncompatibleThreadStateException  | 
-				 InvocationException | IllegalArgumentException e) {
+				 InvocationException | IllegalArgumentException | ObjectCollectedException e) {
 			
+			System.err.println("\nException invoking toString() on " + o.referenceType().name() + ", adding it to the ignore list!\n\t" + e);
+			typesWithInvalidToString.add(o.referenceType().name());
 			/*
 			 *  So i actually tried this, and it never once is actually useful, so I'm disabling it for now. 
 			 *

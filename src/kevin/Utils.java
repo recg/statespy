@@ -44,7 +44,7 @@ import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 
 public class Utils {
 
-	
+
 	/**
 	 * a reference to the target JVM's static "Class" identifier,
 	 * which we will use to invoke <code>Class.forName()</code> on the target JVM
@@ -53,22 +53,28 @@ public class Utils {
 	 * then we can save it for repeated future use. 
 	 */
 	private static ClassType targetJvmClass = null;
-	
+
 	/**
 	 * pairs with the {@link targetJvmClass} above
 	 * A static reference to the <code>Class.forName()</code> method on the target JVM. 
 	 * Used as a dirty hack to load classes into the remote JVM on demand. 
 	 */
 	private static Method targetJvmForName = null;
-	
+
 	private static HashSet<String> loadedClasses = new HashSet<String>();
-	
-	
+
+
 
 	public static boolean shouldExcludeElement(String name, Type staticType, Type runtimeType) {
 		return (runtimeType.name().contains("com.android.server.am.ActivityManagerService") || 
 				runtimeType.name().contains("com.android.server.pm.UserManagerService") ||
+//				runtimeType.name().contains("com.android.server.pm.PackageManagerService") ||
+//				runtimeType.name().contains("android.app.ApplicationPackageManager") ||
+//				runtimeType.name().contains("com.android.server.am.UriPermissionOwner") || 
 				runtimeType.name().contains("android.app.AppOpsManager") ||
+//				runtimeType.name().contains("android.app.ContextImpl") ||
+
+				// always exclude this GC-related stuff
 				name.contains("shadow$_klass_") || 
 				name.contains("shadow$_monitor_")
 				);
@@ -101,6 +107,7 @@ public class Utils {
 
 
 	/**
+	 * This doesn't necessarily return the last line of a method that you can set a breakpoint on. 
 	 * @param m the method to find the end of.
 	 * @return the {@link Location} of the last line in Method m
 	 * @throws AbsentInformationException 
@@ -189,11 +196,11 @@ public class Utils {
 	public static boolean loadClassInTargetJvm(ThreadReference ref, String classToLoad) {
 		if (classToLoad == null)
 			return false;
-		
+
 		// don't repeatedly attempt to load the same class
 		if (loadedClasses.contains(classToLoad))
 			return false; 
-		
+
 		if (targetJvmClass == null) {
 			targetJvmClass = (ClassType) ref.virtualMachine().classesByName("java.lang.Class").get(0);
 		}
@@ -218,11 +225,11 @@ public class Utils {
 				| InvocationException e) {
 			return false;
 		}
-		
+
 		return false;
 	}
 
-	
+
 	public static VirtualMachine connectToDebuggeeJVM(int tcpPort) throws IOException, IllegalConnectorArgumentsException {
 		return connectToDebuggeeJVM("localhost", tcpPort);
 	}
@@ -381,6 +388,28 @@ public class Utils {
 		}
 
 		return sb.toString();
+	}
+
+
+	public static void getUniqueFieldTypes(VirtualMachine vm) {
+		HashSet<String> serviceFieldTypes = new HashSet<>();
+
+		for (ReferenceType c : vm.allClasses())
+		{
+			if (c.name().toLowerCase().contains("service")) {
+				for (Field f : c.allFields()) {
+					if (f.typeName().toLowerCase().contains("array") || 
+						f.typeName().toLowerCase().contains("map") || 
+						f.typeName().toLowerCase().contains("registry")) {
+						serviceFieldTypes.add(f.typeName());
+					}
+				}
+			}
+		}
+
+		for (String s : serviceFieldTypes) {
+			System.out.println(s);
+		}
 	}
 
 
