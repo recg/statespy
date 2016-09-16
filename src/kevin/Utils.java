@@ -1,8 +1,12 @@
 package kevin;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -41,6 +45,8 @@ import com.sun.jdi.connect.AttachingConnector;
 import com.sun.jdi.connect.Connector;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 
+import filter.FilterManager;
+
 
 public class Utils {
 
@@ -63,24 +69,31 @@ public class Utils {
 
 	private static HashSet<String> loadedClasses = new HashSet<String>();
 
-
-
-	public static boolean shouldExcludeElement(String name, Type staticType, Type runtimeType) {
-		return (runtimeType.name().contains("com.android.server.am.ActivityManagerService") || 
-				runtimeType.name().contains("com.android.server.pm.UserManagerService") ||
-//				runtimeType.name().contains("com.android.server.pm.PackageManagerService") ||
-//				runtimeType.name().contains("android.app.ApplicationPackageManager") ||
-//				runtimeType.name().contains("com.android.server.am.UriPermissionOwner") || 
-				runtimeType.name().contains("android.app.AppOpsManager") ||
-//				runtimeType.name().contains("android.app.ContextImpl") ||
-
-				// always exclude this GC-related stuff
-				name.contains("shadow$_klass_") || 
-				name.contains("shadow$_monitor_")
-				);
+	private static final String TYPE_MAPPINGS_FILE = "static_to_runtime_type_mappings.txt";
+	private static HashSet<String> typeMappings = new HashSet<String>();
+	static {
+		try(BufferedReader in = new BufferedReader(new FileReader(TYPE_MAPPINGS_FILE))) {
+		    String s = in.readLine();
+		    typeMappings.add(s);
+		}catch (IOException e) {
+		    System.err.println("No existing type mappings file, creating one ...");
+		}
 	}
-
-
+	
+	private static void populateTypeMappingsFile(Type staticType, Type runtimeType) {
+		String mappingString = staticType.name() + ", " + runtimeType.name();
+		if (!typeMappings.contains(mappingString)) {
+			try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(TYPE_MAPPINGS_FILE, true)))) {
+				out.println(mappingString);
+				typeMappings.add(mappingString);
+			}catch (IOException e) {
+				System.err.println(e);
+			}
+		}
+	}
+	
+		
+	
 	/**
 	 * Currently, this function will return true if the field is:
 	 * <li> an enumeration constant
@@ -92,9 +105,12 @@ public class Utils {
 	public static boolean shouldExcludeField(Field f, Type runtimeType) {
 		// ignore unmodifiable variables
 		try {
-			return (f.isEnumConstant() || 
+			populateTypeMappingsFile(f.type(), runtimeType);
+			
+			return (f.isEnumConstant() ||   // ignore constants
 					(f.isFinal() && (f.typeName().contains("java.lang.String") || (f.type() instanceof PrimitiveType))) || //only ignore final primitives, not final Objects (a final arraylist can still be modified)  
-					shouldExcludeElement(f.name(), f.type(), runtimeType)
+					f.name().contains("shadow$_klass_") ||  // always exclude GC-related stuff
+					f.name().contains("shadow$_monitor_")  // always exclude GC-related stuff
 					);
 
 		} catch (ClassNotLoadedException e) {
@@ -102,7 +118,7 @@ public class Utils {
 			System.err.println(e.toString() + ". " + e.getMessage());
 		}
 
-		return false;
+		return false; // by default, we should include a state in our analysis capture just to be cautious
 	}
 
 
