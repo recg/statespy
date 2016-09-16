@@ -87,7 +87,7 @@ public class BreakpointEventHandler extends Thread {
 	public void run() {
 
 		EventQueue evtQueue = vm.eventQueue();
-		while (connected)
+		while (connected) // TODO: this is always true
 		{
 			EventSet evtSet;
 			try {

@@ -112,8 +112,7 @@ public class Utils {
 			
 			return (f.isEnumConstant() ||   // ignore constants
 					(f.isFinal() && (f.typeName().contains("java.lang.String") || (f.type() instanceof PrimitiveType))) || //only ignore final primitives, not final Objects (a final arraylist can still be modified)  
-					f.name().contains("shadow$_klass_") ||  // always exclude GC-related stuff
-					f.name().contains("shadow$_monitor_")  // always exclude GC-related stuff
+					f.name().contains("shadow$_") // always exclude GC-related stuff: shadow$_klass_ and shadow$_monitor_
 					);
 
 		} catch (ClassNotLoadedException e) {

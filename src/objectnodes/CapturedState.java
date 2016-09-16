@@ -154,7 +154,7 @@ public class CapturedState {
                 	
                 	if (childValue != null) {
                 		if (Utils.shouldExcludeField(field, childValue.type()) || 
-                				FilterManager.shouldExclude(field.name(), this.entry.mthd.declaringType().name(), this.entry.mthd.genericSignature())) {
+                				FilterManager.shouldExclude(field.name(), this.entry.mthd.declaringType().name(), this.entry.mthd.name())) {
                 			continue;
                 		}
 	                	VariableNode child = captureState(childValue, field.name(), field.typeName(), varnode, depth + 1, maxDepth, includeInherited);
