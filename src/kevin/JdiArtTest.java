@@ -117,7 +117,7 @@ public class JdiArtTest {
 			bkptHandler.start();
 		} 
 		catch (ClassNotPreparedException | IndexOutOfBoundsException e) {
-			System.err.println("Error: could not find class ");
+			System.err.println("Error: could not find class " + className + " and/or method " + methodName);
 			jcommander.usage();
 			System.exit(-1);
 		}
