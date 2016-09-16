@@ -3,6 +3,7 @@ package kevin;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -60,7 +61,10 @@ public class JdiArtTest {
 	boolean firstPid = true; // "true" selects the system service, "false" selects the latest JDWP-enabled process 
 
 	@Parameter(names = { "-p", "--port" }, description = "the host's TCP port to forward adb JDWP requests to")
-	int chosenTcpPort = 8888;
+	private int chosenTcpPort = 8888;
+	
+	@Parameter(names = { "--adb-path" }, description = "the full, absolute path to the adb executable")
+	String adbPath = "/home/kevin/android/android-sdk-linux/platform-tools/adb";
 	
 	@Parameter(names = { "-h", "--help" }, description = "prints this help message", help = true)
 	private boolean help;
@@ -86,6 +90,8 @@ public class JdiArtTest {
 			jcommander.usage();
 			System.exit(-1);
 		}
+		
+		Utils.setAdbPath(adbPath); // shitty way to do it, I know
 		
 		ArrayList<Integer> pids = Utils.getJdwpPids();
 		int chosenPid = firstPid ? pids.get(0) : pids.get(pids.size() - 1);
@@ -122,13 +128,21 @@ public class JdiArtTest {
 	private boolean validateCmdLineArgs() {
 		boolean success = true;
 		
+		// must have a valid class name for analysis (method name defaults to be "onTransact")
 		if (className == null) {
 			System.err.println("Error: expected classname argument (-c, --class");
 			success = false;
 		}
 		
+		// must have a filter root directory
 		if (!(new File(filterRootDirectory).isDirectory())) {
 			System.err.println("Error: couldn't find valid filter root directory at " + filterRootDirectory);
+			success = false;
+		}
+		
+		// must be able to execute adb shell command
+		if (!(new File(adbPath).canExecute())) {
+			System.err.println("Error: couldn't find or execute adb command at " + adbPath);
 			success = false;
 		}
 		

@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import com.sun.jdi.AbsentInformationException;
 import com.sun.jdi.BooleanValue;
@@ -45,8 +47,6 @@ import com.sun.jdi.connect.AttachingConnector;
 import com.sun.jdi.connect.Connector;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 
-import filter.FilterManager;
-
 
 public class Utils {
 
@@ -68,6 +68,9 @@ public class Utils {
 	private static Method targetJvmForName = null;
 
 	private static HashSet<String> loadedClasses = new HashSet<String>();
+
+	public static String adbPath;
+
 
 	private static final String TYPE_MAPPINGS_FILE = "static_to_runtime_type_mappings.txt";
 	private static HashSet<String> typeMappings = new HashSet<String>();
@@ -177,7 +180,7 @@ public class Utils {
 	 * @return the PID of the first JDWP-enabled process on the 
 	 */
 	public static ArrayList<Integer> getJdwpPids() {
-		String output = runShellCommand("/home/kevin/android/android-sdk-linux/platform-tools/adb jdwp");
+		String output = runShellCommand(adbPath + " jdwp");
 
 		ArrayList<Integer> pids = new ArrayList<Integer>();
 		for (String s : output.split("\\s"))
@@ -196,7 +199,7 @@ public class Utils {
 	 */
 	public static boolean forwardAdbPort(int tcpPort, int jdwpPid) {
 		// doesn't handle errors yet
-		runShellCommand("/home/kevin/android/android-sdk-linux/platform-tools/adb forward tcp:" + tcpPort + " jdwp:" + jdwpPid);
+		runShellCommand(adbPath + " forward tcp:" + tcpPort + " jdwp:" + jdwpPid);
 		return true;
 	}
 
@@ -452,4 +455,15 @@ public class Utils {
 			System.err.println("Couldn't get callstack: " + ex);
 		}
 	}
+	
+	
+	
+	
+	public static String getAdbPath() {
+		return adbPath;
+	}
+	public static void setAdbPath(String adbPath) {
+		Utils.adbPath = adbPath;
+	}
+
 }
