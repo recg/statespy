@@ -12,15 +12,12 @@ import com.cedarsoftware.util.GraphComparator;
 import com.cedarsoftware.util.GraphComparator.Delta;
 import com.cedarsoftware.util.GraphComparator.ID;
 import com.sun.jdi.AbsentInformationException;
-import com.sun.jdi.Field;
 import com.sun.jdi.IncompatibleThreadStateException;
 import com.sun.jdi.Location;
 import com.sun.jdi.Method;
 import com.sun.jdi.ObjectReference;
-import com.sun.jdi.ReferenceType;
 import com.sun.jdi.StackFrame;
 import com.sun.jdi.ThreadReference;
-import com.sun.jdi.Value;
 import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.event.BreakpointEvent;
 import com.sun.jdi.event.Event;
@@ -31,10 +28,10 @@ import com.sun.jdi.event.MethodExitEvent;
 import com.sun.jdi.request.BreakpointRequest;
 import com.sun.jdi.request.MethodExitRequest;
 
-import de.danielbechler.diff.ObjectDiffer;
 import de.danielbechler.diff.ObjectDifferBuilder;
 import de.danielbechler.diff.node.DiffNode;
 import de.danielbechler.diff.node.Visit;
+import filter.FilterManager;
 import objectnodes.CapturedState;
 import objectnodes.VariableNode;
 
@@ -90,7 +87,7 @@ public class BreakpointEventHandler extends Thread {
 	public void run() {
 
 		EventQueue evtQueue = vm.eventQueue();
-		while (connected)
+		while (connected) // TODO: this is always true
 		{
 			EventSet evtSet;
 			try {
@@ -264,7 +261,7 @@ public class BreakpointEventHandler extends Thread {
 			}
 		}
 		if (!isMethodOfInterest) {
-			System.out.println("\n--> stopped at method exit for don't care method " + evt.method().declaringType() + "." + evt.method().name());
+			System.out.println("\n--> ignoring stoppage at method exit for don't care method " + evt.method().declaringType() + "." + evt.method().name());
 			return;
 		}
 		

@@ -18,6 +18,7 @@ import com.sun.jdi.StringReference;
 import com.sun.jdi.ThreadReference;
 import com.sun.jdi.Value;
 
+import filter.FilterManager;
 import kevin.BreakpointEntry;
 import kevin.BreakpointType;
 import kevin.Utils;
@@ -129,10 +130,6 @@ public class CapturedState {
             		}
             	
             		String elementName = fieldName + "[" + i + "]";
-            		if (Utils.shouldExcludeElement(elementName, arr.type(), arrayVal.type())) {
-            			continue;
-            		}
-            		
                 	VariableNode element = captureState(arrayVal, elementName, arrayVal.type().name(), arrnode, depth + 1, maxDepth, includeInherited);
                 	if (element != null) {
                 		arrnode.addChild(element);
@@ -156,7 +153,8 @@ public class CapturedState {
                 	Value childValue = objectRef.getValue(field);  	
                 	
                 	if (childValue != null) {
-                		if (Utils.shouldExcludeField(field, childValue.type())) {
+                		if (Utils.shouldExcludeField(field, childValue.type()) || 
+                				FilterManager.shouldExclude(field.name(), this.entry.mthd.declaringType().name(), this.entry.mthd.name())) {
                 			continue;
                 		}
 	                	VariableNode child = captureState(childValue, field.name(), field.typeName(), varnode, depth + 1, maxDepth, includeInherited);

@@ -139,7 +139,7 @@ public class VariableNode implements MutableTreeNode {
 		} catch (InvalidTypeException | ClassNotLoadedException | IncompatibleThreadStateException  | 
 				 InvocationException | IllegalArgumentException | ObjectCollectedException e) {
 			
-			System.err.println("\nException invoking toString() on " + o.referenceType().name() + ", adding it to the ignore list!\n\t" + e);
+			System.out.println("\nException invoking toString() on " + o.referenceType().name() + ", adding it to the ignore list!\n"); // + e);
 			typesWithInvalidToString.add(o.referenceType().name());
 			/*
 			 *  So i actually tried this, and it never once is actually useful, so I'm disabling it for now. 
