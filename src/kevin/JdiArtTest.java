@@ -98,7 +98,7 @@ public class JdiArtTest {
 		//			System.out.println(Utils.getAllClasses(vm, true));
 		//			Utils.getUniqueFieldTypes(vm);
 
-		BreakpointEventHandler bkptHandler = new BreakpointEventHandler(vm, fm);
+		BreakpointEventHandler bkptHandler = new BreakpointEventHandler(vm);
 		
 		//			System.out.println(Utils.findMatchingClasses(vm, "onChange"));
 

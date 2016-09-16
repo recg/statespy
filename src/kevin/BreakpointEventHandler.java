@@ -41,15 +41,13 @@ public class BreakpointEventHandler extends Thread {
 
 	ArrayList<BreakpointEntry> breakpoints = new ArrayList<BreakpointEntry>();
 	private VirtualMachine vm;
-	private FilterManager fm;
 	private boolean connected = true; // are we connected to the vm?
 	
 	ArrayList<CapturedState> capturedStates = new ArrayList<>();
 
 
-	public BreakpointEventHandler(VirtualMachine vm, FilterManager fm) { 
+	public BreakpointEventHandler(VirtualMachine vm) { 
 		this.vm = vm;
-		this.fm = fm;
 	}
 
 	/**
