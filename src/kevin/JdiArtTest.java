@@ -57,6 +57,9 @@ public class JdiArtTest {
 	@Parameter(names = { "-f", "--filter" }, description = "the name of the filter root directory that contains class/method field filters")
 	private String filterRootDirectory = "./filters/";
 
+	@Parameter(names = { "-d", "--depth" }, description = "max recursion depth when capturing object graphs")
+	private int maxDepth = 10;
+	
 	@Parameter(names = { "-s", "--system-service" }, description = "whether to debug the system_server process (true) or the most recently-started JDWP process (false)")
 	boolean firstPid = true; // "true" selects the system service, "false" selects the latest JDWP-enabled process 
 
@@ -104,7 +107,7 @@ public class JdiArtTest {
 		//			System.out.println(Utils.getAllClasses(vm, true));
 		//			Utils.getUniqueFieldTypes(vm);
 
-		BreakpointEventHandler bkptHandler = new BreakpointEventHandler(vm);
+		BreakpointEventHandler bkptHandler = new BreakpointEventHandler(vm, maxDepth);
 		
 		//			System.out.println(Utils.findMatchingClasses(vm, "onChange"));
 
@@ -128,9 +131,15 @@ public class JdiArtTest {
 	private boolean validateCmdLineArgs() {
 		boolean success = true;
 		
+		// depth must be a positive integer or 0
+		if (maxDepth < 0) {
+			System.err.println("Error: depth cannot be negative, must be >= 0");
+			success = false;
+		}
+		
 		// must have a valid class name for analysis (method name defaults to be "onTransact")
 		if (className == null) {
-			System.err.println("Error: expected classname argument (-c, --class");
+			System.err.println("Error: expected classname argument (-c, --class)");
 			success = false;
 		}
 		
