@@ -44,7 +44,7 @@ public class BinderTransactionCache {
 	//		}
 	//	}
 
-	// TODO: modify this to cache things to disk for next time
+	// TODO: modify this to persistently cache things to disk for next time
 
 	private static HashMap<String, HashMap<Integer, String>> allTransactions = new HashMap<>();
 
