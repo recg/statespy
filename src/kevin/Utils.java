@@ -29,6 +29,7 @@ import com.sun.jdi.IncompatibleThreadStateException;
 import com.sun.jdi.IntegerValue;
 import com.sun.jdi.InvalidTypeException;
 import com.sun.jdi.InvocationException;
+import com.sun.jdi.LocalVariable;
 import com.sun.jdi.Location;
 import com.sun.jdi.LongValue;
 import com.sun.jdi.Method;
@@ -123,12 +124,14 @@ public class Utils {
 		return false; // by default, we should include a state in our analysis capture just to be cautious
 	}
 
-
+	
+	
 	/**
-	 * This doesn't necessarily return the last line of a method that you can set a breakpoint on. 
+	 * Supposed to return the last line of Method m, but it doesn't necessarily return the last line of a method that you can set a breakpoint on. 
 	 * @param m the method to find the end of.
 	 * @return the {@link Location} of the last line in Method m
 	 * @throws AbsentInformationException 
+	 * @deprecated DO NOT USE, see description. <br><br>
 	 */
 	public static Location getEndOfMethodLocation(Method m) throws AbsentInformationException {
 		// find last line of the method

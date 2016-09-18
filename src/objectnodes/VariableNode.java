@@ -80,6 +80,7 @@ public class VariableNode implements MutableTreeNode {
 
 	protected String type;
 	protected String name;
+	protected String hierarchyName = "";
 
 	protected Value value;
 	protected String stringifiedValue;
@@ -103,8 +104,15 @@ public class VariableNode implements MutableTreeNode {
 		this.type = type;
 		this.value = value;
 		this.parent = parent;
+		setHierarchyName();
 	}
 
+	protected void setHierarchyName() {
+		if (parent != null)
+			this.hierarchyName = parent.hierarchyName;
+		this.hierarchyName += name;
+	}
+	
 	/**
 	 * Gets the actual value of the mirror object on the target JVM 
 	 * by invoking <code>toString()</code> on the Value in this VariableNode.

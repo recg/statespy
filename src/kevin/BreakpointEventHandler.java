@@ -12,12 +12,16 @@ import com.cedarsoftware.util.GraphComparator;
 import com.cedarsoftware.util.GraphComparator.Delta;
 import com.cedarsoftware.util.GraphComparator.ID;
 import com.sun.jdi.AbsentInformationException;
+import com.sun.jdi.Field;
 import com.sun.jdi.IncompatibleThreadStateException;
+import com.sun.jdi.IntegerValue;
+import com.sun.jdi.LocalVariable;
 import com.sun.jdi.Location;
 import com.sun.jdi.Method;
 import com.sun.jdi.ObjectReference;
 import com.sun.jdi.StackFrame;
 import com.sun.jdi.ThreadReference;
+import com.sun.jdi.Value;
 import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.event.BreakpointEvent;
 import com.sun.jdi.event.Event;
@@ -31,7 +35,6 @@ import com.sun.jdi.request.MethodExitRequest;
 import de.danielbechler.diff.ObjectDifferBuilder;
 import de.danielbechler.diff.node.DiffNode;
 import de.danielbechler.diff.node.Visit;
-import filter.FilterManager;
 import objectnodes.CapturedState;
 import objectnodes.VariableNode;
 
@@ -42,12 +45,14 @@ public class BreakpointEventHandler extends Thread {
 	ArrayList<BreakpointEntry> breakpoints = new ArrayList<BreakpointEntry>();
 	private VirtualMachine vm;
 	private boolean connected = true; // are we connected to the vm?
+	int maxDepth;
 	
 	ArrayList<CapturedState> capturedStates = new ArrayList<>();
 
 
-	public BreakpointEventHandler(VirtualMachine vm) { 
+	public BreakpointEventHandler(VirtualMachine vm, int maxDepth) { 
 		this.vm = vm;
+		this.maxDepth = maxDepth;
 	}
 
 	/**
@@ -157,9 +162,16 @@ public class BreakpointEventHandler extends Thread {
 		ObjectReference currentThis = stackFrame.thisObject(); // dynamic reference to "this" current instance object
 		Method currentMethod = bpReq.location().method();
 		
-		System.out.println("\n=======================================================================");
-		System.out.println("============ " + be.type + " Breakpoint at line " + bpReq.location().lineNumber() + "  (" + currentMethod.declaringType() + "." + currentMethod.name() + ") ================");
-		System.out.println("=======================================================================");
+		
+
+		String binderTransaction = BinderTransactionCache.getCurrentTransaction(currentMethod, stackFrame);
+		
+		
+		System.out.println("\n===========================================================================================");
+		System.out.println("============ " + be.type + " Breakpoint at line " + bpReq.location().lineNumber() + "  (" + currentMethod.declaringType().name() + "." + currentMethod.name() + ")");
+		if (binderTransaction != null)
+			System.out.println("============       " + binderTransaction);
+		System.out.println("=============================================================================================");
 		
 
 		
@@ -211,7 +223,7 @@ public class BreakpointEventHandler extends Thread {
 //		}
 		
 		
-		CapturedState capState = new CapturedState(threadRef, currentThis, be);
+		CapturedState capState = new CapturedState(threadRef, currentThis, be, maxDepth);
 		this.capturedStates.add(capState);	
 		capState.dump();
 		capState.visualize();
@@ -265,20 +277,25 @@ public class BreakpointEventHandler extends Thread {
 			return;
 		}
 		
-		System.out.println("\n=======================================================================");
-		System.out.println("============ EXIT Breakpoint at line " + evt.location().lineNumber() + "  (" + evt.method().declaringType() + "." + evt.method().name() + ") ================");
-		System.out.println("=======================================================================");
-		
 		ThreadReference threadRef = evt.thread();
 		StackFrame stackFrame = threadRef.frame(0);
 		ObjectReference currentThis = stackFrame.thisObject(); // dynamic reference to "this" current instance object
+		
+		String binderTransaction = BinderTransactionCache.getCurrentTransaction(evt.method(), stackFrame);
+		
+		System.out.println("\n===========================================================================================");
+		System.out.println("============ EXIT Breakpoint at line " + evt.location().lineNumber() + "  (" + evt.method().declaringType().name() + "." + evt.method().name() + ")");
+		if (binderTransaction != null)
+			System.out.println("============       " + binderTransaction);
+		System.out.println("=============================================================================================");
+		
 		
 		Utils.dumpCallStack(threadRef);
 		
 		MethodExitRequest request = (MethodExitRequest)evt.request();
 		
 		BreakpointEntry be = new BreakpointEntry(request, BreakpointType.EXIT, evt.method());
-		final CapturedState capState = new CapturedState(threadRef, currentThis, be);
+		final CapturedState capState = new CapturedState(threadRef, currentThis, be, maxDepth);
 		this.capturedStates.add(capState);
 		
 		/*

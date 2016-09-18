@@ -29,6 +29,6 @@ public class ArrayNode extends VariableNode {
     public ArrayNode(String name, String type, ArrayReference arr, VariableNode parent) {
         super(name, type, arr, parent);
         this.arrayObj = arr;
-       }
+    }
 
 }

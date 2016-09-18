@@ -54,23 +54,14 @@ public class CapturedState {
 	 * the maximum depth to recurse down through the object graph
 	 */
 	int maxDepth;
-	public static int DEFAULT_MAX_DEPTH = 10;
 
 	
 	public CapturedState(ThreadReference thr, ObjectReference obj, BreakpointEntry e, int md) {
 		this.threadRef = thr;
 		this.entry = e;
-		
-		if (maxDepth >= 0) {
-			this.maxDepth = md;
-		}
+		this.maxDepth = md;
 		
 		captureObjectState(obj);	
-	}
-	
-	
-	public CapturedState(ThreadReference thr, ObjectReference obj, BreakpointEntry e) {
-		this(thr, obj, e, DEFAULT_MAX_DEPTH);
 	}
 	
 	
@@ -154,7 +145,8 @@ public class CapturedState {
                 	
                 	if (childValue != null) {
                 		if (Utils.shouldExcludeField(field, childValue.type()) || 
-                				FilterManager.shouldExclude(field.name(), this.entry.mthd.declaringType().name(), this.entry.mthd.name())) {
+                				// right now we're only using the filter for the top-level field names
+                				((depth == 0) && FilterManager.shouldExclude(field.name(), this.entry.mthd.declaringType().name(), this.entry.mthd.name()))) {
                 			continue;
                 		}
 	                	VariableNode child = captureState(childValue, field.name(), field.typeName(), varnode, depth + 1, maxDepth, includeInherited);

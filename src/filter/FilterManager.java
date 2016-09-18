@@ -86,7 +86,7 @@ public class FilterManager {
 			return mf.shouldInclude(variableName);
 		}
 		
-		System.out.println("WARNING: cannot determine whether to include " + className + "." + variableName + "(method=" + methodName + ")");
+//		System.out.println("WARNING: cannot determine whether to include " + className + "." + variableName + "(method=" + methodName + ")");
 		return true; // /always include by default, just to be safe
 	}
 	
