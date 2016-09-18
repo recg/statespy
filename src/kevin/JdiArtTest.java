@@ -64,7 +64,7 @@ public class JdiArtTest {
 	private int chosenTcpPort = 8888;
 	
 	@Parameter(names = { "--adb-path" }, description = "the full, absolute path to the adb executable")
-	String adbPath = "/home/kevin/android/android-sdk-linux/platform-tools/adb";
+	String adbPath = "/home/delmilio/Android/Sdk/platform-tools/adb";
 	
 	@Parameter(names = { "-h", "--help" }, description = "prints this help message", help = true)
 	private boolean help;

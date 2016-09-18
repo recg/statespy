@@ -179,11 +179,7 @@ public class Utils {
 	 * @return the PID of the first JDWP-enabled process on the 
 	 */
 	public static ArrayList<Integer> getJdwpPids() {
-<<<<<<< HEAD
-		String output = runShellCommand("/home/delmilio/Android/Sdk/platform-tools/adb jdwp");
-=======
 		String output = runShellCommand(adbPath + " jdwp");
->>>>>>> master
 
 		ArrayList<Integer> pids = new ArrayList<Integer>();
 		for (String s : output.split("\\s"))
