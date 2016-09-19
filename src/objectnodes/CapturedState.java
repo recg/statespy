@@ -178,10 +178,15 @@ public class CapturedState {
     }
     
     
-    public void visualize() {
-    	String windowTitle = this.entry.mthd.name() + " " + this.entry.type.toString() + 
-    						 "(" + this.entry.mthd.declaringType() + ")";
-    	SwingTree treeView = new SwingTree(this.rootObject, windowTitle);
+    public void visualize(String transaction) {
+    	StringBuilder windowTitle = new StringBuilder(this.entry.type.toString());
+    	windowTitle.append(" ");
+    	windowTitle.append(this.entry.mthd.declaringType().name()).append(".");
+    	windowTitle.append(this.entry.mthd.name());
+    	if (transaction != null)
+    		windowTitle.append(" [").append(transaction).append("] ");
+    	
+    	SwingTree treeView = new SwingTree(this.rootObject, windowTitle.toString());
     }
     
     
