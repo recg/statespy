@@ -46,13 +46,18 @@ public class BreakpointEventHandler extends Thread {
 	private VirtualMachine vm;
 	private boolean connected = true; // are we connected to the vm?
 	int maxDepth;
+	final private boolean visualize;
 	
 	ArrayList<CapturedState> capturedStates = new ArrayList<>();
 
-
-	public BreakpointEventHandler(VirtualMachine vm, int maxDepth) { 
+	public BreakpointEventHandler(VirtualMachine vm, int maxDepth, boolean visualize) {
 		this.vm = vm;
 		this.maxDepth = maxDepth;
+		this.visualize = visualize;
+	}
+	
+	public BreakpointEventHandler(VirtualMachine vm, int maxDepth) {
+		this(vm, maxDepth, false);
 	}
 
 	/**
@@ -230,7 +235,9 @@ public class BreakpointEventHandler extends Thread {
 			@Override
 			public void run() {
 				capState.dump();
-				capState.visualize(binderTransaction);		
+				if (visualize) {
+					capState.visualize(binderTransaction);
+				}
 			}
 		});
 		t.start();
@@ -298,7 +305,9 @@ public class BreakpointEventHandler extends Thread {
 			@Override
 			public void run() {
 				capState.dump();
-				capState.visualize(binderTransaction);		
+				if (visualize) {
+					capState.visualize(binderTransaction);
+				}
 				CapturedState beginState = findMatchingBeginState(capState);
 				compareStates(beginState, capState);
 			}

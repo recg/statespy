@@ -40,7 +40,7 @@ import filter.FilterManager;
  *  The <tt>dt_android_adb</tt> option is necessary because that's the only way we can connect to existing system services
  *  (using dt_socket isn't scalable to more than one dalvikvm instance on the device).
  */
-public class JdiArtTest {
+public class JdiArtMain {
 
 	
 	/*
@@ -60,6 +60,9 @@ public class JdiArtTest {
 	@Parameter(names = { "-d", "--depth" }, description = "max recursion depth when capturing object graphs")
 	private int maxDepth = 10;
 	
+	@Parameter(names = { "-v", "--visualize" }, description = "whether to show every object's JTree visualization window")
+	private boolean visualize = false;
+	
 	@Parameter(names = { "-s", "--system-service" }, description = "whether to debug the system_server process (true) or the most recently-started JDWP process (false)")
 	boolean firstPid = true; // "true" selects the system service, "false" selects the latest JDWP-enabled process 
 
@@ -75,7 +78,7 @@ public class JdiArtTest {
 
 	public static void main(String[] args) throws Exception
 	{
-		JdiArtTest driver = new JdiArtTest();
+		JdiArtMain driver = new JdiArtMain();
 		driver.jcommander = new JCommander(driver, args); // parses command-line args
 		driver.jcommander.setProgramName("JDI State Spill Tool");
 		driver.go();
@@ -107,7 +110,7 @@ public class JdiArtTest {
 		//			System.out.println(Utils.getAllClasses(vm, true));
 		//			Utils.getUniqueFieldTypes(vm);
 
-		BreakpointEventHandler bkptHandler = new BreakpointEventHandler(vm, maxDepth);
+		BreakpointEventHandler bkptHandler = new BreakpointEventHandler(vm, maxDepth, visualize);
 		
 		//			System.out.println(Utils.findMatchingClasses(vm, "onChange"));
 
