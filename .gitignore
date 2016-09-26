@@ -1,5 +1,6 @@
 # Java classes build
 bin/
+out/
 
 # Eclipse
 .classpath
