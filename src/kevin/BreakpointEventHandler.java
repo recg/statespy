@@ -46,13 +46,18 @@ public class BreakpointEventHandler extends Thread {
 	private VirtualMachine vm;
 	private boolean connected = true; // are we connected to the vm?
 	int maxDepth;
+	final private boolean visualize;
 	
 	ArrayList<CapturedState> capturedStates = new ArrayList<>();
 
-
-	public BreakpointEventHandler(VirtualMachine vm, int maxDepth) { 
+	public BreakpointEventHandler(VirtualMachine vm, int maxDepth, boolean visualize) {
 		this.vm = vm;
 		this.maxDepth = maxDepth;
+		this.visualize = visualize;
+	}
+	
+	public BreakpointEventHandler(VirtualMachine vm, int maxDepth) {
+		this(vm, maxDepth, false);
 	}
 
 	/**
@@ -164,7 +169,7 @@ public class BreakpointEventHandler extends Thread {
 		
 		
 
-		String binderTransaction = BinderTransactionCache.getCurrentTransaction(currentMethod, stackFrame);
+		final String binderTransaction = BinderTransactionCache.getCurrentTransaction(currentMethod, stackFrame);
 		
 		
 		System.out.println("\n===========================================================================================");
@@ -223,30 +228,19 @@ public class BreakpointEventHandler extends Thread {
 //		}
 		
 		
-		CapturedState capState = new CapturedState(threadRef, currentThis, be, maxDepth);
+		final CapturedState capState = new CapturedState(threadRef, currentThis, be, maxDepth);
 		this.capturedStates.add(capState);	
-		capState.dump();
-		capState.visualize();
-
-
-		// TODO:  could potentially capture the state of a whole service that may span multiple methods that touch different objects. 
-		//        all of those objects should be included
-		// TODO: so, given a starting point "a" below, we should capture "a", "b", and "c" states as the before states, and then c', b', and a' as the after states.
-		//		 we should be able to tell when entering and exiting a method, hopefully don't have to step through individual statements, that will kill performance
-		/*
-		 *  a
-		 *   \
-		 *    b
-		 *     \
-		 *      c
-		 *      |
-		 *      c' 
-		 *     /
-		 *    b'
-		 *   /  
-		 *  a'
-		 */
-
+		
+		Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				capState.dump();
+				if (visualize) {
+					capState.visualize(binderTransaction);
+				}
+			}
+		});
+		t.start();
 
 
 		// prints local stack variables
@@ -281,7 +275,7 @@ public class BreakpointEventHandler extends Thread {
 		StackFrame stackFrame = threadRef.frame(0);
 		ObjectReference currentThis = stackFrame.thisObject(); // dynamic reference to "this" current instance object
 		
-		String binderTransaction = BinderTransactionCache.getCurrentTransaction(evt.method(), stackFrame);
+		final String binderTransaction = BinderTransactionCache.getCurrentTransaction(evt.method(), stackFrame);
 		
 		System.out.println("\n===========================================================================================");
 		System.out.println("============ EXIT Breakpoint at line " + evt.location().lineNumber() + "  (" + evt.method().declaringType().name() + "." + evt.method().name() + ")");
@@ -311,7 +305,9 @@ public class BreakpointEventHandler extends Thread {
 			@Override
 			public void run() {
 				capState.dump();
-				capState.visualize();		
+				if (visualize) {
+					capState.visualize(binderTransaction);
+				}
 				CapturedState beginState = findMatchingBeginState(capState);
 				compareStates(beginState, capState);
 			}
