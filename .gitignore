@@ -1,6 +1,7 @@
 # Java classes build
 bin/
 out/
+*.jar
 
 # Eclipse
 .classpath
@@ -18,3 +19,4 @@ out/
 # Maven
 log/
 target/
+
