@@ -1,0 +1,9 @@
+
+Exception in thread "main" com.beust.jcommander.ParameterException: Expected a value after parameter -c
+	at com.beust.jcommander.JCommander.processFixedArity(JCommander.java:883)
+	at com.beust.jcommander.JCommander.processFixedArity(JCommander.java:857)
+	at com.beust.jcommander.JCommander.parseValues(JCommander.java:725)
+	at com.beust.jcommander.JCommander.parse(JCommander.java:282)
+	at com.beust.jcommander.JCommander.parse(JCommander.java:265)
+	at com.beust.jcommander.JCommander.<init>(JCommander.java:210)
+	at kevin.JdiArtMain.main(JdiArtMain.java:82)
