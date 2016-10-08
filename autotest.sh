@@ -2,10 +2,13 @@
 
 num=$1
 filt=$2
-   
+
+
 echo $filt
 java -jar jdi_state_spill.jar -c $filt &
 JarPID=$!
+
+trap "echo Booh!" SIGINT SIGTERM
 
 adb shell pm list packages -f | grep "/app/" | while read p; do
     printf "\n"
@@ -15,3 +18,4 @@ adb shell pm list packages -f | grep "/app/" | while read p; do
 done
 
 kill $JarPID
+

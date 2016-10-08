@@ -1,0 +1,103 @@
+android.location.ICountryDetector
+
+
+Attached to process 'Dalvik' at hostname=localhost, port=8888
+
+** No activities found to run, monkey aborted.
+
+br.com.lftek.androidclipboard
+Usage: JDI State Spill Tool [options]
+  Options:
+    --adb-path
+       the full, absolute path to the adb executable
+       Default: /home/delmilio/Android/Sdk/platform-tools/adb
+    -c, --class
+       the fully-qualified classname that contains the method for analysis
+    -d, --depth
+       max recursion depth when capturing object graphs
+       Default: 10
+    -f, --filter
+       the name of the filter root directory that contains class/method field
+       filters
+       Default: ./filters/
+    -h, --help
+       prints this help message
+       Default: false
+    -m, --method
+       the method name to set a breakpoint at
+       Default: onTransact
+    -p, --port
+       the host's TCP port to forward adb JDWP requests to
+       Default: 8888
+    -s, --system-service
+       whether to debug the system_server process (true) or the most
+       recently-started JDWP process (false)
+       Default: true
+    -v, --visualize
+       whether to show every object's JTree visualization window
+       Default: false
+
+Events injected: 100
+## Network stats: elapsed time=227ms (0ms mobile, 0ms wifi, 227ms not connected)
+
+com.catchingnow.tinyclipboardmanager
+** No activities found to run, monkey aborted.
+
+com.qualcomm.shutdownlistner
+** No activities found to run, monkey aborted.
+
+org.cyanogenmod.wallpapers.photophase
+** No activities found to run, monkey aborted.
+
+com.android.documentsui
+** No activities found to run, monkey aborted.
+
+com.android.galaxy4
+** No activities found to run, monkey aborted.
+
+com.android.htmlviewer
+Events injected: 100
+## Network stats: elapsed time=174ms (0ms mobile, 0ms wifi, 174ms not connected)
+
+org.cyanogenmod.gello.browser
+Events injected: 100
+## Network stats: elapsed time=239ms (0ms mobile, 0ms wifi, 239ms not connected)
+
+com.android.messaging
+** No activities found to run, monkey aborted.
+
+com.android.terminal
+Events injected: 100
+## Network stats: elapsed time=492ms (0ms mobile, 0ms wifi, 492ms not connected)
+
+com.android.soundrecorder
+    // activityResuming(com.android.soundrecorder)
+// CRASH: android.process.media (pid 11990)
+// Short Msg: java.lang.IllegalStateException
+// Long Msg: java.lang.IllegalStateException: Activity {com.android.providers.downloads.ui/com.android.providers.downloads.ui.DownloadList} did not call finish() prior to onResume() completing
+// Build Label: google/hammerhead/hammerhead:6.0.1/MOB31E/3142026:user/release-keys
+// Build Changelist: 7f71989bee
+// Build Time: 1474695848000
+// java.lang.RuntimeException: Unable to resume activity {com.android.providers.downloads.ui/com.android.providers.downloads.ui.DownloadList}: java.lang.IllegalStateException: Activity {com.android.providers.downloads.ui/com.android.providers.downloads.ui.DownloadList} did not call finish() prior to onResume() completing
+// 	at android.app.ActivityThread.performResumeActivity(ActivityThread.java:3137)
+// 	at android.app.ActivityThread.handleResumeActivity(ActivityThread.java:3168)
+// 	at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:2515)
+// 	at android.app.ActivityThread.-wrap11(ActivityThread.java)
+// 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1363)
+// 	at android.os.Handler.dispatchMessage(Handler.java:102)
+// 	at android.os.Looper.loop(Looper.java:148)
+// 	at android.app.ActivityThread.main(ActivityThread.java:5461)
+// 	at java.lang.reflect.Method.invoke(Native Method)
+// 	at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:726)
+// 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:616)
+// Caused by: java.lang.IllegalStateException: Activity {com.android.providers.downloads.ui/com.android.providers.downloads.ui.DownloadList} did not call finish() prior to onResume() completing
+// 	at android.app.Activity.performResume(Activity.java:6339)
+// 	at android.app.ActivityThread.performResumeActivity(ActivityThread.java:3126)
+// 	... 10 more
+// 
+** Monkey aborted due to error.
+Events injected: 12
+## Network stats: elapsed time=82ms (0ms mobile, 0ms wifi, 82ms not connected)
+** System appears to have crashed at event 12 of 100 using seed 1475912910159
+
+com.android.providers.downloads.ui

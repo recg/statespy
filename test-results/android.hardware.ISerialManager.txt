@@ -1,0 +1,355 @@
+android.hardware.ISerialManager
+
+
+** No activities found to run, monkey aborted.
+
+br.com.lftek.androidclipboard
+Attached to process 'Dalvik' at hostname=localhost, port=8888
+
+Usage: JDI State Spill Tool [options]
+  Options:
+    --adb-path
+       the full, absolute path to the adb executable
+       Default: /home/delmilio/Android/Sdk/platform-tools/adb
+    -c, --class
+       the fully-qualified classname that contains the method for analysis
+    -d, --depth
+       max recursion depth when capturing object graphs
+       Default: 10
+    -f, --filter
+       the name of the filter root directory that contains class/method field
+       filters
+       Default: ./filters/
+    -h, --help
+       prints this help message
+       Default: false
+    -m, --method
+       the method name to set a breakpoint at
+       Default: onTransact
+    -p, --port
+       the host's TCP port to forward adb JDWP requests to
+       Default: 8888
+    -s, --system-service
+       whether to debug the system_server process (true) or the most
+       recently-started JDWP process (false)
+       Default: true
+    -v, --visualize
+       whether to show every object's JTree visualization window
+       Default: false
+
+Events injected: 100
+## Network stats: elapsed time=173ms (0ms mobile, 0ms wifi, 173ms not connected)
+
+com.catchingnow.tinyclipboardmanager
+** No activities found to run, monkey aborted.
+
+com.qualcomm.shutdownlistner
+** No activities found to run, monkey aborted.
+
+org.cyanogenmod.wallpapers.photophase
+** No activities found to run, monkey aborted.
+
+com.android.documentsui
+** No activities found to run, monkey aborted.
+
+com.android.galaxy4
+** No activities found to run, monkey aborted.
+
+com.android.htmlviewer
+Events injected: 100
+## Network stats: elapsed time=497ms (0ms mobile, 0ms wifi, 497ms not connected)
+
+org.cyanogenmod.gello.browser
+Events injected: 100
+## Network stats: elapsed time=178ms (0ms mobile, 0ms wifi, 178ms not connected)
+
+com.android.messaging
+** No activities found to run, monkey aborted.
+
+com.android.terminal
+Events injected: 100
+## Network stats: elapsed time=273ms (0ms mobile, 0ms wifi, 273ms not connected)
+
+com.android.soundrecorder
+    // activityResuming(com.android.soundrecorder)
+// CRASH: android.process.media (pid 8674)
+// Short Msg: java.lang.IllegalStateException
+// Long Msg: java.lang.IllegalStateException: Activity {com.android.providers.downloads.ui/com.android.providers.downloads.ui.DownloadList} did not call finish() prior to onResume() completing
+// Build Label: google/hammerhead/hammerhead:6.0.1/MOB31E/3142026:user/release-keys
+// Build Changelist: 7f71989bee
+// Build Time: 1474695848000
+// java.lang.RuntimeException: Unable to resume activity {com.android.providers.downloads.ui/com.android.providers.downloads.ui.DownloadList}: java.lang.IllegalStateException: Activity {com.android.providers.downloads.ui/com.android.providers.downloads.ui.DownloadList} did not call finish() prior to onResume() completing
+// 	at android.app.ActivityThread.performResumeActivity(ActivityThread.java:3137)
+// 	at android.app.ActivityThread.handleResumeActivity(ActivityThread.java:3168)
+// 	at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:2515)
+// 	at android.app.ActivityThread.-wrap11(ActivityThread.java)
+// 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1363)
+// 	at android.os.Handler.dispatchMessage(Handler.java:102)
+// 	at android.os.Looper.loop(Looper.java:148)
+// 	at android.app.ActivityThread.main(ActivityThread.java:5461)
+// 	at java.lang.reflect.Method.invoke(Native Method)
+// 	at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:726)
+// 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:616)
+// Caused by: java.lang.IllegalStateException: Activity {com.android.providers.downloads.ui/com.android.providers.downloads.ui.DownloadList} did not call finish() prior to onResume() completing
+// 	at android.app.Activity.performResume(Activity.java:6339)
+// 	at android.app.ActivityThread.performResumeActivity(ActivityThread.java:3126)
+// 	... 10 more
+// 
+** Monkey aborted due to error.
+Events injected: 17
+## Network stats: elapsed time=87ms (0ms mobile, 0ms wifi, 87ms not connected)
+** System appears to have crashed at event 17 of 100 using seed 1475912334203
+
+com.android.providers.downloads.ui
+** No activities found to run, monkey aborted.
+
+com.android.pacprocessor
+** No activities found to run, monkey aborted.
+
+com.android.certinstaller
+** No activities found to run, monkey aborted.
+
+com.lge.update
+** No activities found to run, monkey aborted.
+
+com.android.nfc
+** No activities found to run, monkey aborted.
+
+com.android.stk
+** No activities found to run, monkey aborted.
+
+org.cyanogenmod.profiles
+Events injected: 100
+## Network stats: elapsed time=184ms (0ms mobile, 0ms wifi, 184ms not connected)
+
+com.google.android.deskclock
+** No activities found to run, monkey aborted.
+
+com.cyanogenmod.lockclock
+** No activities found to run, monkey aborted.
+
+com.android.wallpaper.holospiral
+Events injected: 100
+## Network stats: elapsed time=359ms (0ms mobile, 0ms wifi, 359ms not connected)
+
+com.android.calendar
+** No activities found to run, monkey aborted.
+
+com.android.phasebeam
+** No activities found to run, monkey aborted.
+
+com.qualcomm.qcrilmsgtunnel
+** No activities found to run, monkey aborted.
+
+com.android.printspooler
+** No activities found to run, monkey aborted.
+
+com.android.dreams.basic
+** No activities found to run, monkey aborted.
+
+com.android.frameworks.telresources
+** No activities found to run, monkey aborted.
+
+com.android.webview
+// CRASH: de.halfreal.clipboardactions (pid 5886)
+// Short Msg: java.lang.IllegalStateException
+// Long Msg: java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState
+// Build Label: google/hammerhead/hammerhead:6.0.1/MOB31E/3142026:user/release-keys
+// Build Changelist: 7f71989bee
+// Build Time: 1474695848000
+// java.lang.RuntimeException: java.lang.reflect.InvocationTargetException
+// 	at android.support.v7.internal.view.SupportMenuInflater$InflatedOnMenuItemClickListener.onMenuItemClick(SupportMenuInflater.java:259)
+// 	at android.support.v7.internal.view.menu.MenuItemImpl.invoke(MenuItemImpl.java:149)
+// 	at android.support.v7.internal.view.menu.MenuBuilder.performItemAction(MenuBuilder.java:958)
+// 	at android.support.v7.internal.view.menu.MenuBuilder.performItemAction(MenuBuilder.java:948)
+// 	at android.support.v7.widget.ActionMenuView.invokeItem(ActionMenuView.java:619)
+// 	at android.support.v7.internal.view.menu.ActionMenuItemView.onClick(ActionMenuItemView.java:139)
+// 	at android.view.View.performClick(View.java:5204)
+// 	at android.view.View.onKeyUp(View.java:9888)
+// 	at android.widget.TextView.onKeyUp(TextView.java:6191)
+// 	at android.view.KeyEvent.dispatch(KeyEvent.java:2689)
+// 	at android.view.View.dispatchKeyEvent(View.java:9240)
+// 	at android.view.ViewGroup.dispatchKeyEvent(ViewGroup.java:1640)
+// 	at android.view.ViewGroup.dispatchKeyEvent(ViewGroup.java:1640)
+// 	at android.view.ViewGroup.dispatchKeyEvent(ViewGroup.java:1640)
+// 	at android.view.ViewGroup.dispatchKeyEvent(ViewGroup.java:1640)
+// 	at android.view.ViewGroup.dispatchKeyEvent(ViewGroup.java:1640)
+// 	at android.view.ViewGroup.dispatchKeyEvent(ViewGroup.java:1640)
+// 	at android.view.ViewGroup.dispatchKeyEvent(ViewGroup.java:1640)
+// 	at android.view.ViewGroup.dispatchKeyEvent(ViewGroup.java:1640)
+// 	at com.android.internal.policy.PhoneWindow$DecorView.superDispatchKeyEvent(PhoneWindow.java:2651)
+// 	at com.android.internal.policy.PhoneWindow.superDispatchKeyEvent(PhoneWindow.java:1777)
+// 	at android.app.Activity.dispatchKeyEvent(Activity.java:2731)
+// 	at android.support.v7.internal.view.WindowCallbackWrapper.dispatchKeyEvent(WindowCallbackWrapper.java:50)
+// 	at android.support.v7.app.AppCompatDelegateImplBase$AppCompatWindowCallbackBase.dispatchKeyEvent(AppCompatDelegateImplBase.java:226)
+// 	at android.support.v7.internal.view.WindowCallbackWrapper.dispatchKeyEvent(WindowCallbackWrapper.java:50)
+// 	at com.android.internal.policy.PhoneWindow$DecorView.dispatchKeyEvent(PhoneWindow.java:2363)
+// 	at android.view.ViewRootImpl$ViewPostImeInputStage.processKeyEvent(ViewRootImpl.java:4135)
+// 	at android.view.ViewRootImpl$ViewPostImeInputStage.onProcess(ViewRootImpl.java:4097)
+// 	at android.view.ViewRootImpl$InputStage.deliver(ViewRootImpl.java:3650)
+// 	at android.view.ViewRootImpl$InputStage.onDeliverToNext(ViewRootImpl.java:3703)
+// 	at android.view.ViewRootImpl$InputStage.forward(ViewRootImpl.java:3669)
+// 	at android.view.ViewRootImpl$AsyncInputStage.forward(ViewRootImpl.java:3795)
+// 	at android.view.ViewRootImpl$InputStage.apply(ViewRootImpl.java:3677)
+// 	at android.view.ViewRootImpl$AsyncInputStage.apply(ViewRootImpl.java:3852)
+// 	at android.view.ViewRootImpl$InputStage.deliver(ViewRootImpl.java:3650)
+// 	at android.view.ViewRootImpl$InputStage.onDeliverToNext(ViewRootImpl.java:3703)
+// 	at android.view.ViewRootImpl$InputStage.forward(ViewRootImpl.java:3669)
+// 	at android.view.ViewRootImpl$InputStage.apply(ViewRootImpl.java:3677)
+// 	at android.view.ViewRootImpl$InputStage.deliver(ViewRootImpl.java:3650)
+// 	at android.view.ViewRootImpl$InputStage.onDeliverToNext(ViewRootImpl.java:3703)
+// 	at android.view.ViewRootImpl$InputStage.forward(ViewRootImpl.java:3669)
+// 	at android.view.ViewRootImpl$AsyncInputStage.forward(ViewRootImpl.java:3828)
+// 	at android.view.ViewRootImpl$ImeInputStage.onFinishedInputEvent(ViewRootImpl.java:3989)
+// 	at android.view.inputmethod.InputMethodManager$PendingEvent.run(InputMethodManager.java:2253)
+// 	at android.view.inputmethod.InputMethodManager.invokeFinishedInputEventCallback(InputMethodManager.java:1874)
+// 	at android.view.inputmethod.InputMethodManager.finishedInputEvent(InputMethodManager.java:1865)
+// 	at android.view.inputmethod.InputMethodManager$ImeInputEventSender.onInputEventFinished(InputMethodManager.java:2230)
+// 	at android.view.InputEventSender.dispatchInputEventFinished(InputEventSender.java:141)
+// 	at android.os.MessageQueue.nativePollOnce(Native Method)
+// 	at android.os.MessageQueue.next(MessageQueue.java:323)
+// 	at android.os.Looper.loop(Looper.java:135)
+// 	at android.app.ActivityThread.main(ActivityThread.java:5461)
+// 	at java.lang.reflect.Method.invoke(Native Method)
+// 	at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:726)
+// 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:616)
+// Caused by: java.lang.reflect.InvocationTargetException
+// 	at java.lang.reflect.Method.invoke(Native Method)
+// 	at android.support.v7.internal.view.SupportMenuInflater$InflatedOnMenuItemClickListener.onMenuItemClick(SupportMenuInflater.java:255)
+// 	... 54 more
+// Caused by: java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState
+// 	at android.app.FragmentManagerImpl.checkStateLoss(FragmentManager.java:1411)
+// 	at android.app.FragmentManagerImpl.enqueueAction(FragmentManager.java:1429)
+// 	at android.app.BackStackRecord.commitInternal(BackStackRecord.java:687)
+// 	at android.app.BackStackRecord.commit(BackStackRecord.java:663)
+// 	at de.halfreal.clipboardactions.ui.activity.ClipboardActionsActivity.showFragment(ClipboardActionsActivity.java:74)
+// 	at de.halfreal.clipboardactions.ui.activity.ClipboardActionsActivity.onMenuSettings(ClipboardActionsActivity.java:113)
+// 	... 56 more
+// 
+** Monkey aborted due to error.
+Events injected: 49
+## Network stats: elapsed time=421ms (0ms mobile, 0ms wifi, 421ms not connected)
+** System appears to have crashed at event 49 of 100 using seed 1475912350106
+
+de.halfreal.clipboardactions
+Events injected: 100
+// CRASH: com.xyz.scope (pid 5976)
+// Short Msg: java.lang.IllegalStateException
+// Long Msg: java.lang.IllegalStateException
+// Build Label: google/hammerhead/hammerhead:6.0.1/MOB31E/3142026:user/release-keys
+// Build Changelist: 7f71989bee
+// Build Time: 1474695848000
+// java.lang.IllegalStateException
+// 	at android.media.AudioRecord.native_start(Native Method)
+// 	at android.media.AudioRecord.startRecording(AudioRecord.java:901)
+// 	at com.xyz.scope.Recorder.onLoop(Recorder.java:152)
+// 	at com.xyz.scope.Worker$WorkerRunnable.run(Worker.java:20)
+// 	at java.lang.Thread.run(Thread.java:818)
+// 
+## Network stats: elapsed time=287ms (0ms mobile, 0ms wifi, 287ms not connected)
+
+com.xyz.scope
+Events injected: 100
+## Network stats: elapsed time=355ms (0ms mobile, 0ms wifi, 355ms not connected)
+
+org.rojekti.clipper
+** No activities found to run, monkey aborted.
+
+com.google.android.syncadapters.contacts
+** No activities found to run, monkey aborted.
+
+com.android.facelock
+** No activities found to run, monkey aborted.
+
+com.android.keychain
+** No activities found to run, monkey aborted.
+
+com.cyanogenmod.wallpapers
+Events injected: 100
+## Network stats: elapsed time=259ms (0ms mobile, 0ms wifi, 259ms not connected)
+
+com.android.gallery3d
+** No activities found to run, monkey aborted.
+
+com.google.android.tts
+Events injected: 100
+## Network stats: elapsed time=286ms (0ms mobile, 0ms wifi, 286ms not connected)
+
+devdnua.clipboard
+** No activities found to run, monkey aborted.
+
+com.svox.pico
+Events injected: 100
+## Network stats: elapsed time=704ms (0ms mobile, 0ms wifi, 704ms not connected)
+
+com.cyanogenmod.filemanager
+** No activities found to run, monkey aborted.
+
+com.android.inputmethod.latin
+** No activities found to run, monkey aborted.
+
+com.google.android.syncadapters.calendar
+** No activities found to run, monkey aborted.
+
+com.android.dreams.phototable
+** No activities found to run, monkey aborted.
+
+com.android.noisefield
+** No activities found to run, monkey aborted.
+
+com.android.smspush
+Events injected: 100
+## Network stats: elapsed time=299ms (0ms mobile, 0ms wifi, 299ms not connected)
+
+edu.rice.recg.statespill
+** No activities found to run, monkey aborted.
+
+com.android.wallpaper.livepicker
+** No activities found to run, monkey aborted.
+
+org.cyanogenmod.hexolibre
+Events injected: 100
+## Network stats: elapsed time=324ms (0ms mobile, 0ms wifi, 324ms not connected)
+
+com.cyanogenmod.eleven
+Events injected: 100
+## Network stats: elapsed time=519ms (0ms mobile, 0ms wifi, 519ms not connected)
+
+com.android.calculator2
+** No activities found to run, monkey aborted.
+
+com.android.wallpaper
+Events injected: 100
+## Network stats: elapsed time=316ms (0ms mobile, 0ms wifi, 316ms not connected)
+
+com.android.email
+Events injected: 100
+## Network stats: elapsed time=229ms (0ms mobile, 0ms wifi, 229ms not connected)
+
+com.king.candycrushsaga
+** No activities found to run, monkey aborted.
+
+com.android.providers.userdictionary
+Events injected: 100
+## Network stats: elapsed time=847ms (0ms mobile, 0ms wifi, 847ms not connected)
+
+com.android.deskclock
+** No activities found to run, monkey aborted.
+
+com.android.exchange
+** No activities found to run, monkey aborted.
+
+com.android.bluetoothmidiservice
+** No activities found to run, monkey aborted.
+
+org.cyanogenmod.wallpaperpicker
+** No activities found to run, monkey aborted.
+
+com.android.bluetooth
+** No activities found to run, monkey aborted.
+
+com.qualcomm.timeservice
+** No activities found to run, monkey aborted.
+
+com.android.development
+** No activities found to run, monkey aborted.

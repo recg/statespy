@@ -1,0 +1,78 @@
+android.bluetooth.IBluetoothManager$Stub
+Attached to process 'Dalvik' at hostname=localhost, port=8888
+
+Set ENTRY breakpoint at method android.bluetooth.IBluetoothManager$Stub.onTransact(int, android.os.Parcel, android.os.Parcel, int), android.bluetooth.IBluetoothManager$Stub:43
+
+
+** No activities found to run, monkey aborted.
+
+br.com.lftek.androidclipboard
+Events injected: 300
+## Network stats: elapsed time=3126ms (0ms mobile, 0ms wifi, 3126ms not connected)
+
+com.catchingnow.tinyclipboardmanager
+Events injected: 300
+## Network stats: elapsed time=7367ms (0ms mobile, 0ms wifi, 7367ms not connected)
+
+com.farproc.wifi.analyzer
+Events injected: 300
+## Network stats: elapsed time=6336ms (0ms mobile, 0ms wifi, 6336ms not connected)
+
+com.halfbrick.fruitninjafree
+** No activities found to run, monkey aborted.
+
+com.qualcomm.shutdownlistner
+Events injected: 300
+## Network stats: elapsed time=8138ms (0ms mobile, 0ms wifi, 8138ms not connected)
+
+com.bethsoft.falloutshelter
+    // Injection Failed
+    // Injection Failed
+Events injected: 300
+## Network stats: elapsed time=11142ms (0ms mobile, 0ms wifi, 11142ms not connected)
+
+com.weather.Weather
+    // activityResuming(com.weather.Weather)
+Events injected: 300
+## Network stats: elapsed time=4896ms (0ms mobile, 0ms wifi, 4896ms not connected)
+
+com.ea.game.pvzfree_row
+** No activities found to run, monkey aborted.
+
+org.cyanogenmod.wallpapers.photophase
+** No activities found to run, monkey aborted.
+
+com.android.documentsui
+** No activities found to run, monkey aborted.
+
+com.android.galaxy4
+** No activities found to run, monkey aborted.
+
+com.android.htmlviewer
+Events injected: 300
+## Network stats: elapsed time=12920ms (0ms mobile, 0ms wifi, 12920ms not connected)
+
+org.cyanogenmod.gello.browser
+Events injected: 300
+## Network stats: elapsed time=6963ms (0ms mobile, 0ms wifi, 6963ms not connected)
+
+org.kman.WifiManager
+    // activityResuming(com.android.messaging)
+Events injected: 300
+## Network stats: elapsed time=10353ms (0ms mobile, 0ms wifi, 10353ms not connected)
+
+com.android.messaging
+** No activities found to run, monkey aborted.
+
+com.android.terminal
+
+===========================================================================================
+============ ENTRY Breakpoint at line 43  (android.bluetooth.IBluetoothManager$Stub.onTransact)
+============       TRANSACTION_registerAdapter (1)
+=============================================================================================
+Set EXIT breakpoint at method onTransact
+    --- Callstack --- 
+        android.os.Binder : execTransact  (Binder.java : 453)
+        android.bluetooth.IBluetoothManager$Stub : onTransact  (IBluetoothManager.java : 43)
+
+

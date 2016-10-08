@@ -1,0 +1,13 @@
+
+
+
+** No activities found to run, monkey aborted.
+
+br.com.lftek.androidclipboard
+Events injected: 100
+## Network stats: elapsed time=159ms (0ms mobile, 0ms wifi, 159ms not connected)
+
+com.catchingnow.tinyclipboardmanager
+** No activities found to run, monkey aborted.
+
+com.qualcomm.shutdownlistner
