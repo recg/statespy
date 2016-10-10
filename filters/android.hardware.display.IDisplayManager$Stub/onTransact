@@ -1,0 +1,9 @@
+mVirtualDisplayAdapter
+mHandler
+mProjectionService
+mLogicalDisplays
+mWifiDisplayAdapter
+mCallbacks
+mWifiDisplayScanRequestCount
+mDisplayDevices
+mTempDisplayInfo

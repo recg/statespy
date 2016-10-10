@@ -8,9 +8,9 @@ echo $filt
 java -jar jdi_state_spill.jar -c $filt &
 JarPID=$!
 
-trap "echo Booh!" SIGINT SIGTERM
+trap "kill $JarPID" SIGINT SIGTERM
 
-adb shell pm list packages -f | grep "/app/" | while read p; do
+cat test_apps.txt | grep "/app/" | while read p; do
     printf "\n"
     echo $service_name
 	service_name=$(cut -d "=" -f 2 -s <<< $p | sed 's/\r//g')
@@ -18,4 +18,4 @@ adb shell pm list packages -f | grep "/app/" | while read p; do
 done
 
 kill $JarPID
-
+    

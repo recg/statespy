@@ -20,3 +20,5 @@ out/
 log/
 target/
 
+# Runtime Tool
+test-results/

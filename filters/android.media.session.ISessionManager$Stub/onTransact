@@ -1,0 +1,8 @@
+mUserRecords
+mHandler
+mAudioManagerInternal
+mRvc
+mVoiceButtonDown
+mKeyEventReceiver
+mSessionsListeners
+mVoiceButtonHandled

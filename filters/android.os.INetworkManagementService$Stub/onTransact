@@ -1,0 +1,16 @@
+mNetworkActive
+mConnector
+mUidRejectOnQuota
+mWlanBlacklist
+mDataInterfaceName
+mBandwidthControlEnabled
+mFirewallChainStates
+mUidFirewallDozableRules
+mUidCleartextPolicy
+mDataBlacklist
+mUidFirewallRules
+mActiveAlerts
+mActiveIdleTimers
+mUidFirewallStandbyRules
+mActiveQuotas
+mWifiInterfaceName

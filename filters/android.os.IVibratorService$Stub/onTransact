@@ -1,0 +1,9 @@
+mPreviousVibrations
+mThread
+mH
+mInputDeviceVibrators
+mVibrationRunnable
+mCurrentVibration
+mAppOpsService
+mVibrations
+mCurVibUid

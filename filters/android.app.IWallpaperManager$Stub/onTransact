@@ -1,0 +1,7 @@
+mCurrentUserId
+mLock
+mLastWallpaper
+mWallpaperMap
+mImageWallpaper
+mIPackageManager
+mContext
