@@ -35,7 +35,7 @@ public class ClassFilter {
 				try {
 					String methodName = f.getName();
 					if (methodName.contains(".")) {
-						methodName = methodName.split("\\.")[0]; // removes .txt file extension
+						methodName = methodName.substring(0, methodName.lastIndexOf('.')); // removes .txt file extension
 					}
 					MethodFilter filter = new MethodFilter(f.getCanonicalPath(), className, methodName);
 					filters.put(methodName, filter);
