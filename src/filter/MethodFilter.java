@@ -16,8 +16,10 @@ public class MethodFilter {
 	private String filterFile;
 	private String className;
 	private String methodName;
+	private boolean filterIsEmpty = false;
 
 	private HashSet<String> includedFields = new HashSet<String>();
+	private HashSet<String> excludedFields = new HashSet<String>();
 	
 	
 	public MethodFilter(String filterFile, String className, String methodName) {
@@ -31,9 +33,25 @@ public class MethodFilter {
 		try (BufferedReader br = new BufferedReader(new FileReader(filterFile))) {
 		    String line;
 		    while ((line = br.readLine()) != null) {
-		    	includedFields.add(line.trim());
+		    	// find includes
+		    	if (line.toLowerCase().startsWith("y:") || line.toLowerCase().startsWith("i:") ) {
+		    		includedFields.add(line.substring(2).trim());
+		    	}
+		    	
+		    	// find excludes
+		    	else if (line.toLowerCase().startsWith("n:") || line.toLowerCase().startsWith("e:") ) {
+		    		excludedFields.add(line.substring(2).trim());
+		    	}
+		    	
+		    	else {
+		    		// support legacy filters that were whitelist only
+		    		includedFields.add(line.trim());
+		    	}
 		    }
+		    
+		    filterIsEmpty = includedFields.isEmpty() && excludedFields.isEmpty();
 		    return true;
+		    
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
@@ -42,7 +60,17 @@ public class MethodFilter {
 	}
 	
 	public boolean shouldInclude(String varName) {
-		return includedFields.contains(varName);
+		// empty filter files revert to a whitelist-all policy
+		if (filterIsEmpty)
+			return true;
+
+		if (excludedFields.contains(varName))
+			return false;
+		
+		if (includedFields.contains(varName)) 
+			return true;
+
+		return false; // exclude by default
 	}
 	
 	public boolean shouldExclude(String varName) {

@@ -70,11 +70,12 @@ public class JdiArtMain {
 	private int chosenTcpPort = 8888;
 	
 	@Parameter(names = { "--adb-path" }, description = "the full, absolute path to the adb executable")
-	String adbPath = "/home/delmilio/Android/Sdk/platform-tools/adb";
+//	String adbPath = "/home/delmilio/Android/Sdk/platform-tools/adb";
+	String adbPath = "/home/kevin/android/android-sdk-linux/platform-tools/adb";
 	
 	@Parameter(names = { "-h", "--help" }, description = "prints this help message", help = true)
 	private boolean help;
-
+	
 
 	public static void main(String[] args) throws Exception
 	{
@@ -105,8 +106,8 @@ public class JdiArtMain {
 		Utils.forwardAdbPort(chosenTcpPort, chosenPid);
 		VirtualMachine vm = Utils.connectToDebuggeeJVM(chosenTcpPort);
 
-		FilterManager.initialize(filterRootDirectory);
 		
+		FilterManager.initialize(filterRootDirectory);
 		//			System.out.println(Utils.getAllClasses(vm, true));
 		//			Utils.getUniqueFieldTypes(vm);
 

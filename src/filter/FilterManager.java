@@ -81,6 +81,9 @@ public class FilterManager {
 	}
 	
 	public static boolean shouldInclude(String variableName, String className, String methodName) {
+//		if (variableName.equals("this$0"))
+//			return false;
+		
 		MethodFilter mf = getMethodFilter(className, methodName);
 		if (mf != null) {
 			return mf.shouldInclude(variableName);

@@ -1,16 +1,11 @@
 package objectnodes;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.swing.JTree;
-
 import com.sun.jdi.ArrayReference;
-import com.sun.jdi.ClassNotLoadedException;
 import com.sun.jdi.Field;
-import com.sun.jdi.IncompatibleThreadStateException;
-import com.sun.jdi.InvalidTypeException;
-import com.sun.jdi.InvocationException;
 import com.sun.jdi.Method;
 import com.sun.jdi.ObjectReference;
 import com.sun.jdi.PrimitiveValue;
@@ -149,6 +144,9 @@ public class CapturedState {
                 				((depth == 0) && FilterManager.shouldExclude(field.name(), this.entry.mthd.declaringType().name(), this.entry.mthd.name()))) {
                 			continue;
                 		}
+                		if (depth == 0) {
+                    		System.out.println("            Starting capture of top-level field: " + field.name() + " at time " + (new Date()).toString());
+                    	}
 	                	VariableNode child = captureState(childValue, field.name(), field.typeName(), varnode, depth + 1, maxDepth, includeInherited);
 	                	if (child != null) {
 	                		varnode.addChild(child);
