@@ -11,9 +11,9 @@ for path in ./filters/*; do
     fi
 
     if [ -e "$path/onTransact" ] ; then
-        ./autotest.sh $num $filter 2>&1 | tee "test-results/$filter.txt"
+        ./autotest.sh $num $filter
     else
-        echo no filter for $filter
+        echo "no filter for $filter"
     fi
 
 done
