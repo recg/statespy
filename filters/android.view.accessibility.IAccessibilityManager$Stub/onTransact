@@ -1,0 +1,12 @@
+mUserStates
+mGlobalWindowTokens
+mCurrentUserId
+mGlobalInteractionConnections
+mTempComponentNameSet
+mSecurityPolicy
+mWindowsForAccessibilityCallback
+mTempAccessibilityServiceInfoList
+mGlobalClients
+mWindowManagerService
+mEnableTouchExplorationDialog
+mLock

@@ -1,0 +1,15 @@
+mWifiStateMachine
+mWifiStateMachineChannel
+mMulticastDisabled
+mUserManager
+mContext
+mFullHighPerfLocksAcquired
+mInIdleMode
+mScanLocksReleased
+mMulticastEnabled
+mFullHighPerfLocksReleased
+mFullLocksAcquired
+mScanLocksAcquired
+mLocks
+mFullLocksReleased
+mMulticasters

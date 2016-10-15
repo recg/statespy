@@ -1,0 +1,6 @@
+mContext
+mFirstCallToVold
+mLockSettingsService
+mStorage
+mGateKeeperService
+mLockPatternUtils

@@ -1,0 +1,15 @@
+mNextRtcWakeup
+mNextNonWakeup
+mConstants
+mNextAlarmClockMayChange
+mNextWakeup
+mPendingNonWakeupAlarms
+mNativeData
+mPendingWhileIdleAlarms
+mNextAlarmClockForUser
+mNextNonWakeupDeliveryTime
+mRandom
+mPendingIdleUntil
+mKevinTestCounter
+mAlarmBatches
+mNextWakeFromIdle

@@ -1,0 +1,80 @@
+android.hardware.usb.IUsbManager$Stub
+
+
+Attached to process 'Dalvik' at hostname=localhost, port=8888
+
+Set ENTRY breakpoint at method android.hardware.usb.IUsbManager$Stub.onTransact(int, android.os.Parcel, android.os.Parcel, int), android.hardware.usb.IUsbManager$Stub:39
+** No activities found to run, monkey aborted.
+
+br.com.lftek.androidclipboard
+    // Injection Failed
+Events injected: 200
+## Network stats: elapsed time=32457ms (0ms mobile, 0ms wifi, 32457ms not connected)
+
+com.catchingnow.tinyclipboardmanager
+    // Injection Failed
+    // Injection Failed
+    // Injection Failed
+    // Injection Failed
+    // Injection Failed
+    // Injection Failed
+    // Injection Failed
+    // Injection Failed
+    // Injection Failed
+    // Injection Failed
+    // Injection Failed
+    // Injection Failed
+    // Injection Failed
+    // Injection Failed
+    // Injection Failed
+    // Injection Failed
+    // Injection Failed
+    // Injection Failed
+Events injected: 200
+## Network stats: elapsed time=7414ms (0ms mobile, 0ms wifi, 7414ms not connected)
+
+com.farproc.wifi.analyzer
+Events injected: 200
+## Network stats: elapsed time=10593ms (0ms mobile, 0ms wifi, 10593ms not connected)
+
+com.halfbrick.fruitninjafree
+** No activities found to run, monkey aborted.
+
+com.qualcomm.shutdownlistner
+Events injected: 200
+## Network stats: elapsed time=6066ms (0ms mobile, 0ms wifi, 6066ms not connected)
+
+com.bethsoft.falloutshelter
+
+===========================================================================================
+============ ENTRY Breakpoint at line 39  (android.hardware.usb.IUsbManager$Stub.onTransact)
+============       TRANSACTION_getDeviceList (1)
+=============================================================================================
+Set EXIT breakpoint at method onTransact
+    --- Callstack --- 
+        android.os.Binder : execTransact  (Binder.java : 453)
+        android.hardware.usb.IUsbManager$Stub : onTransact  (IUsbManager.java : 39)
+
+
+
+Exception invoking toString() on android.os.BatteryStats$HistoryTag, adding it to the ignore list!
+
+Captured state in 543.215 seconds.
+com.android.server.usb.UsbService  this (top-level) = com.android.server.usb.UsbService@96c8f3a
+  android.app.ContextImpl  mContext = android.app.ContextImpl@bb5c2b7
+  com.android.server.usb.UsbDeviceManager  mDeviceManager = com.android.server.usb.UsbDeviceManager@d1d19b2
+  com.android.server.usb.UsbHostManager  mHostManager = com.android.server.usb.UsbHostManager@d66179d
+  com.android.server.usb.UsbPortManager  mPortManager = com.android.server.usb.UsbPortManager@b3e136a
+  android.util.SparseArray  mSettingsByUser = {0=com.android.server.usb.UsbSettingsManager@ce4b480}
+
+--> ignoring stoppage at method exit for don't care method class com.android.server.usb.UsbService (no class loader).getDeviceList
+
+===========================================================================================
+============ EXIT Breakpoint at line 60  (android.hardware.usb.IUsbManager$Stub.onTransact)
+============       TRANSACTION_getDeviceList (1)
+=============================================================================================
+    --- Callstack --- 
+        android.os.Binder : execTransact  (Binder.java : 453)
+        android.hardware.usb.IUsbManager$Stub : onTransact  (IUsbManager.java : 60)
+
+

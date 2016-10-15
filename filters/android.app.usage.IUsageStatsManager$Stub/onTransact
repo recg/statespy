@@ -1,0 +1,8 @@
+mAppIdleEnabled
+mUserState
+mRealTimeSnapshot
+mSystemTimeSnapshot
+mScreenOnTime
+mAppWidgetManager
+mAppIdleParoled
+mLastScreenOnEventRealtime

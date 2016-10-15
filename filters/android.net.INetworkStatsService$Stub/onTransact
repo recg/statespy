@@ -1,0 +1,16 @@
+mActiveUidIfaces
+mWakeLock
+mUidOperations
+mActiveIface
+mConnManager
+mXtRecorder
+mActiveIfaces
+mSettings
+mActiveUidCounterSet
+mTime
+mUidTagRecorder
+mDevRecorder
+mNetworkManager
+mUidRecorder
+mSystemReady
+mPersistThreshold

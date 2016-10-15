@@ -1,5 +1,10 @@
 package kevin;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,17 +52,28 @@ public class BreakpointEventHandler extends Thread {
 	private boolean connected = true; // are we connected to the vm?
 	int maxDepth;
 	final private boolean visualize;
+	final private String className;
+    private BufferedWriter bw = null;
 	
 	ArrayList<CapturedState> capturedStates = new ArrayList<>();
 
-	public BreakpointEventHandler(VirtualMachine vm, int maxDepth, boolean visualize) {
+
+
+	public BreakpointEventHandler(VirtualMachine vm, int maxDepth, boolean visualize, String className) {
 		this.vm = vm;
 		this.maxDepth = maxDepth;
 		this.visualize = visualize;
+		this.className = className;
+	    try {
+			this.bw = new BufferedWriter(new FileWriter("./test-results/" + className + ".txt", true));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
-	public BreakpointEventHandler(VirtualMachine vm, int maxDepth) {
-		this(vm, maxDepth, false);
+	public BreakpointEventHandler(VirtualMachine vm, int maxDepth, String className) {
+		this(vm, maxDepth, false, className);
 	}
 
 	/**
@@ -89,7 +105,7 @@ public class BreakpointEventHandler extends Thread {
 		}
 		this.breakpoints.add(new BreakpointEntry(b, type, m));
 		
-		System.out.println("Set " + type + " breakpoint at method " + m + ", " + loc);
+		writetoFile("Set " + type + " breakpoint at method " + m + ", " + loc);
 	}
 
 
@@ -172,11 +188,11 @@ public class BreakpointEventHandler extends Thread {
 		final String binderTransaction = BinderTransactionCache.getCurrentTransaction(currentMethod, stackFrame);
 		
 		
-		System.out.println("\n===========================================================================================");
-		System.out.println("============ " + be.type + " Breakpoint at line " + bpReq.location().lineNumber() + "  (" + currentMethod.declaringType().name() + "." + currentMethod.name() + ")");
+		writetoFile("\n===========================================================================================");
+		writetoFile("============ " + be.type + " Breakpoint at line " + bpReq.location().lineNumber() + "  (" + currentMethod.declaringType().name() + "." + currentMethod.name() + ")");
 		if (binderTransaction != null)
-			System.out.println("============       " + binderTransaction);
-		System.out.println("=============================================================================================");
+			writetoFile("============       " + binderTransaction);
+		writetoFile("=============================================================================================");
 		
 
 		
@@ -203,7 +219,7 @@ public class BreakpointEventHandler extends Thread {
 		// could also add referencetype filter just for this class
 		mer.setSuspendPolicy(BreakpointRequest.SUSPEND_ALL);
 		mer.enable();
-		System.out.println("Set EXIT breakpoint at method " + currentMethod.name());
+		writetoFile("Set EXIT breakpoint at method " + currentMethod.name());
 		
 		
 		Utils.dumpCallStack(threadRef);
@@ -267,7 +283,7 @@ public class BreakpointEventHandler extends Thread {
 			}
 		}
 		if (!isMethodOfInterest) {
-			System.out.println("\n--> ignoring stoppage at method exit for don't care method " + evt.method().declaringType() + "." + evt.method().name());
+//			writetoFile("\n--> ignoring stoppage at method exit for don't care method " + evt.method().declaringType() + "." + evt.method().name());
 			return;
 		}
 		
@@ -277,11 +293,11 @@ public class BreakpointEventHandler extends Thread {
 		
 		final String binderTransaction = BinderTransactionCache.getCurrentTransaction(evt.method(), stackFrame);
 		
-		System.out.println("\n===========================================================================================");
-		System.out.println("============ EXIT Breakpoint at line " + evt.location().lineNumber() + "  (" + evt.method().declaringType().name() + "." + evt.method().name() + ")");
+		writetoFile("\n===========================================================================================");
+		writetoFile("============ EXIT Breakpoint at line " + evt.location().lineNumber() + "  (" + evt.method().declaringType().name() + "." + evt.method().name() + ")");
 		if (binderTransaction != null)
-			System.out.println("============       " + binderTransaction);
-		System.out.println("=============================================================================================");
+			writetoFile("============       " + binderTransaction);
+		writetoFile("=============================================================================================");
 		
 		
 		Utils.dumpCallStack(threadRef);
@@ -378,18 +394,18 @@ public class BreakpointEventHandler extends Thread {
 //		        final Object workingValue = node.canonicalGet(working);
 //		        final String message = node.getPath() + " changed from " + 
 //		                               baseValue + " to " + workingValue;
-//		        System.out.println(message);
-		    	System.out.println(node.getPath() + " => " + node.getState());
+//		        writetoFile(message);
+		    	writetoFile(node.getPath() + " => " + node.getState());
 		    }
 		});
 		
-		System.out.println("\n---- finished printing java-object-diff changes ----\n\n");
+		writetoFile("\n---- finished printing java-object-diff changes ----\n\n");
 	}
 	
 	
 	public void compareStatesJavaUtil(CapturedState beg, CapturedState end) {
 		
-		System.out.println("\n---- starting to print java-util GraphComparator changes ----\n\n");
+		writetoFile("\n---- starting to print java-util GraphComparator changes ----\n\n");
 		
 		
 		List<Delta> diffs = GraphComparator.compare(beg.getRootObject(), end.getRootObject(), new ID() {
@@ -412,7 +428,7 @@ public class BreakpointEventHandler extends Thread {
 			if (source instanceof VariableNode && target instanceof VariableNode) {
 				VariableNode s = (VariableNode)source;
 				VariableNode t = (VariableNode)target;
-				System.out.println(s.getName() + " changed, old=" + s.getValueAsString() + ", new=" + t.getValueAsString() + "  (" + s.getTypeString() + ")");
+				writetoFile(s.getName() + " changed, old=" + s.getValueAsString() + ", new=" + t.getValueAsString() + "  (" + s.getTypeString() + ")");
 				List<VariableNode> hierarchy = new ArrayList<VariableNode>();
 				VariableNode parent = s;
 				do {
@@ -424,21 +440,21 @@ public class BreakpointEventHandler extends Thread {
 						break;
 					}
 				} while (true);
-				System.out.print("      ");
+				writetoFile("      ", false);
 				for (int i = hierarchy.size() - 1; i >= 0; i--) {
 					VariableNode n = hierarchy.get(i);
 					if (n != null) {
-						System.out.print(n.getName() + " -> ");
+						writetoFile(n.getName() + " -> ", false);
 					}
 				}
-				System.out.println();
+				writetoFile("");
 			}
 			else {
-//				System.out.println("unknown type: " + d);
+//				writetoFile("unknown type: " + d);
 			}
 		}
 		
-		System.out.println("\n---- finished printing java-util GraphComparator changes ----\n\n");
+		writetoFile("\n---- finished printing java-util GraphComparator changes ----\n\n");
 	}
 	
 	
@@ -456,6 +472,31 @@ public class BreakpointEventHandler extends Thread {
 		
 		Diff diff = javers.compare(beg.getRootObject(), end.getRootObject());
 //		Diff diff = javers.compareCollections(beg.getRootObject().getChildren(), end.getRootObject().getChildren(), VariableNode.class);
-		System.out.println(diff.prettyPrint());
+		writetoFile(diff.prettyPrint());
+	}
+	
+	public void writetoFile(String s) {
+		System.out.println(s);
+		try {
+			bw.write(s);
+			bw.newLine();
+			bw.flush();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+	}
+	
+	public void writetoFile(String s, boolean newline) {
+		if (!newline) {
+			System.out.print(s);
+			try {
+				bw.write(s);
+				bw.flush();
+			} catch (IOException ioe) {
+				ioe.printStackTrace();
+			}	
+		} else {
+			writetoFile(s);
+		}
 	}
 }

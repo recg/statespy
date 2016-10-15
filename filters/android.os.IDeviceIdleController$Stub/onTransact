@@ -1,0 +1,15 @@
+mNetworkPolicyTempWhitelistCallback
+mLocalPowerManager
+mGenericLocationListener
+mPowerSaveWhitelistExceptIdleAppIds
+mPowerSaveWhitelistUserApps
+mTempWhitelistAppIdEndTimes
+mPowerSaveWhitelistApps
+mHandler
+mLocationManager
+mPowerSaveWhitelistAppsExceptIdle
+mGpsLocationListener
+mMotionListener
+mPowerSaveWhitelistAllAppIds
+mTempWhitelistAppIdArray
+mState

@@ -186,7 +186,7 @@ public class Utils {
 
 		ArrayList<Integer> pids = new ArrayList<Integer>();
 		for (String s : output.split("\\s"))
-			pids.add(Integer.parseInt(s));;
+			pids.add(Integer.parseInt(s));
 
 			return pids;
 	}
