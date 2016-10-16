@@ -53,17 +53,19 @@ public class BreakpointEventHandler extends Thread {
 	int maxDepth;
 	final private boolean visualize;
 	final private String className;
+	private boolean skipGetTransactions;
     private BufferedWriter bw = null;
 	
 	ArrayList<CapturedState> capturedStates = new ArrayList<>();
 
 
 
-	public BreakpointEventHandler(VirtualMachine vm, int maxDepth, boolean visualize, String className) {
+	public BreakpointEventHandler(VirtualMachine vm, int maxDepth, boolean visualize, String className, boolean sg) {
 		this.vm = vm;
 		this.maxDepth = maxDepth;
 		this.visualize = visualize;
 		this.className = className;
+		this.skipGetTransactions = sg;
 	    try {
 			this.bw = new BufferedWriter(new FileWriter("./test-results/" + className + ".txt", true));
 		} catch (IOException e) {
@@ -73,7 +75,7 @@ public class BreakpointEventHandler extends Thread {
 	}
 	
 	public BreakpointEventHandler(VirtualMachine vm, int maxDepth, String className) {
-		this(vm, maxDepth, false, className);
+		this(vm, maxDepth, false, className, false);
 	}
 
 	/**
@@ -186,7 +188,16 @@ public class BreakpointEventHandler extends Thread {
 		
 
 		final String binderTransaction = BinderTransactionCache.getCurrentTransaction(currentMethod, stackFrame);
-		
+		if (skipGetTransactions && binderTransaction != null) {
+			if ((binderTransaction.startsWith("TRANSACTION_get") && (binderTransaction.length() > 15)) ||
+				(binderTransaction.startsWith("TRANSACTION_is")  && (binderTransaction.length() > 14)) ||
+				(binderTransaction.startsWith("TRANSACTION_has") && (binderTransaction.length() > 15)))
+			{
+				// skip TRANSACTION_get* but don't skip something just called TRANSACTION_get  by itself
+				System.out.println("### Skipping getter Transaction: " + binderTransaction + "\n");
+				return;
+			}
+		}
 		
 		writetoFile("\n===========================================================================================");
 		writetoFile("============ " + be.type + " Breakpoint at line " + bpReq.location().lineNumber() + "  (" + currentMethod.declaringType().name() + "." + currentMethod.name() + ")");
@@ -406,7 +417,7 @@ public class BreakpointEventHandler extends Thread {
 	public void compareStatesJavaUtil(CapturedState beg, CapturedState end) {
 		
 		writetoFile("\n---- starting to print java-util GraphComparator changes ----\n\n");
-		
+		int numChanges = 0;
 		
 		List<Delta> diffs = GraphComparator.compare(beg.getRootObject(), end.getRootObject(), new ID() {
 			@Override
@@ -445,6 +456,7 @@ public class BreakpointEventHandler extends Thread {
 					VariableNode n = hierarchy.get(i);
 					if (n != null) {
 						writetoFile(n.getName() + " -> ", false);
+						numChanges++;
 					}
 				}
 				writetoFile("");
@@ -454,7 +466,7 @@ public class BreakpointEventHandler extends Thread {
 			}
 		}
 		
-		writetoFile("\n---- finished printing java-util GraphComparator changes ----\n\n");
+		writetoFile("\n---- finished printing java-util GraphComparator changes: " + numChanges + " change(s) ----\n\n");
 	}
 	
 	

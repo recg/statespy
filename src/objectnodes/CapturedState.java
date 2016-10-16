@@ -163,7 +163,7 @@ public class CapturedState {
                 			System.err.println("Error: tried to get instance value of: " + first + ", but failed.");
                 			return varnode;
                 		}
-                		System.out.println("                 Using fields from outer class " + rt.name() + " instead of " + innerClassName + " (From field: " + first + ")");
+                		System.out.println("          Using fields from outer class " + rt.name() + " instead of " + innerClassName + " (From field: " + first + ")");
                 	}
                 }
                 for (Field field : fields) {

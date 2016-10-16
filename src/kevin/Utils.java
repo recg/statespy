@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import com.sun.jdi.AbsentInformationException;
@@ -29,7 +28,6 @@ import com.sun.jdi.IncompatibleThreadStateException;
 import com.sun.jdi.IntegerValue;
 import com.sun.jdi.InvalidTypeException;
 import com.sun.jdi.InvocationException;
-import com.sun.jdi.LocalVariable;
 import com.sun.jdi.Location;
 import com.sun.jdi.LongValue;
 import com.sun.jdi.Method;
@@ -71,6 +69,7 @@ public class Utils {
 	private static HashSet<String> loadedClasses = new HashSet<String>();
 
 	public static String adbPath;
+	private static Set<String> exclusions = new HashSet<>();
 
 
 	private static final String TYPE_MAPPINGS_FILE = "static_to_runtime_type_mappings.txt";
@@ -112,6 +111,7 @@ public class Utils {
 			populateTypeMappingsFile(f.type(), runtimeType);
 			
 			return (f.isEnumConstant() ||   // ignore constants
+					exclusions.contains(f.name()) ||  // ignore manually specified exclusions
 					(f.isFinal() && (f.typeName().contains("java.lang.String") || (f.type() instanceof PrimitiveType))) || //only ignore final primitives, not final Objects (a final arraylist can still be modified)  
 					f.name().contains("shadow$_") // always exclude GC-related stuff: shadow$_klass_ and shadow$_monitor_
 					);
@@ -467,5 +467,8 @@ public class Utils {
 	public static void setAdbPath(String adbPath) {
 		Utils.adbPath = adbPath;
 	}
-
+	
+	public static void addExclusions(List<String> exclusions) {
+		Utils.exclusions.addAll(exclusions);
+	}
 }

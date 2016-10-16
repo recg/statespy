@@ -3,7 +3,7 @@ package kevin;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.List;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -76,6 +76,14 @@ public class JdiArtMain {
 	@Parameter(names = { "-h", "--help" }, description = "prints this help message", help = true)
 	private boolean help;
 	
+	@Parameter(names = { "-e", "--exclude" }, description = "keywords for field names to ALWAYS exclude, e.g., -e mContext -e mH -e mAppOps, each separated by a space.")
+	private List<String> exclusions = new ArrayList<>();
+
+	
+	@Parameter(names = { "--skip-get" }, description = "skip all transactions that start with \"get\"")
+	boolean skipGetTransactions = false;  
+
+	
 
 	public static void main(String[] args) throws Exception
 	{
@@ -98,7 +106,9 @@ public class JdiArtMain {
 			System.exit(-1);
 		}
 		
-		Utils.setAdbPath(adbPath); // shitty way to do it, I know
+		Utils.setAdbPath(adbPath); // shitty way to these, I know
+		Utils.addExclusions(exclusions);
+		
 		
 		ArrayList<Integer> pids = Utils.getJdwpPids();
 		int chosenPid = firstPid ? pids.get(0) : pids.get(pids.size() - 1);
@@ -111,7 +121,7 @@ public class JdiArtMain {
 		//			System.out.println(Utils.getAllClasses(vm, true));
 		//			Utils.getUniqueFieldTypes(vm);
 
-		BreakpointEventHandler bkptHandler = new BreakpointEventHandler(vm, maxDepth, visualize, className);
+		BreakpointEventHandler bkptHandler = new BreakpointEventHandler(vm, maxDepth, visualize, className, skipGetTransactions);
 		
 		//			System.out.println(Utils.findMatchingClasses(vm, "onChange"));
 
