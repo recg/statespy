@@ -154,14 +154,16 @@ public class CapturedState {
                 		
                 		try {
                 			Value outerClassInstance = objectRef.getValue(first);
-                			if (outerClassInstance instanceof ObjectReference)
+                			if (outerClassInstance instanceof ObjectReference) {
                 				objectRef = (ObjectReference)outerClassInstance;
+                        		fields = rt.fields();
+                			}
                 		}
                 		catch (IllegalArgumentException e) {
                 			System.err.println("Error: tried to get instance value of: " + first + ", but failed.");
                 			return varnode;
                 		}
-                		System.out.println("          Using fields from outer class " + rt.name() + " instead of " + innerClassName + " (From field: " + first + ")");
+                		System.out.println("                 Using fields from outer class " + rt.name() + " instead of " + innerClassName + " (From field: " + first + ")");
                 	}
                 }
                 for (Field field : fields) {
