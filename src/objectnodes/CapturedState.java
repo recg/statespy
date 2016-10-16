@@ -5,10 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.sun.jdi.ArrayReference;
+import com.sun.jdi.ClassObjectReference;
 import com.sun.jdi.Field;
 import com.sun.jdi.Method;
 import com.sun.jdi.ObjectReference;
 import com.sun.jdi.PrimitiveValue;
+import com.sun.jdi.ReferenceType;
 import com.sun.jdi.StringReference;
 import com.sun.jdi.ThreadReference;
 import com.sun.jdi.Value;
@@ -135,6 +137,33 @@ public class CapturedState {
                 
                 // capture the fields of this object
                 List<Field> fields = objectRef.referenceType().fields(); // .allFields();  //includeInherited ? obj.referenceType().visibleFields() : obj.referenceType().fields();
+                
+                
+                //check for inner class
+                if (depth == 0 && fields.size() == 1) {
+                	Field first = fields.get(0);
+                	if (first.name().contains("this$")) {
+                		String innerClassName = first.declaringType().name();
+                		String outerClassName = innerClassName.substring(0, innerClassName.indexOf("$"));
+                		List<ReferenceType> matchingOuterClasses = objectRef.virtualMachine().classesByName(outerClassName);
+                		if (matchingOuterClasses.isEmpty()) {
+                			System.err.println("Couldn't find matching outer class " + outerClassName + " when trying to analyze field: "  + first);
+                			return varnode;
+                		}
+                		ReferenceType rt = matchingOuterClasses.get(0);
+                		
+                		try {
+                			Value outerClassInstance = objectRef.getValue(first);
+                			if (outerClassInstance instanceof ObjectReference)
+                				objectRef = (ObjectReference)outerClassInstance;
+                		}
+                		catch (IllegalArgumentException e) {
+                			System.err.println("Error: tried to get instance value of: " + first + ", but failed.");
+                			return varnode;
+                		}
+                		System.out.println("          Using fields from outer class " + rt.name() + " instead of " + innerClassName + " (From field: " + first + ")");
+                	}
+                }
                 for (Field field : fields) {
                 	Value childValue = objectRef.getValue(field);  	
                 	
