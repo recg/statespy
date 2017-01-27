@@ -181,14 +181,15 @@ public class Utils {
 	/**
 	 * @return the PID of the first JDWP-enabled process on the 
 	 */
-	public static ArrayList<Integer> getJdwpPids() {
+	public static ArrayList<Integer> getJdwpPids() throws NumberFormatException {
 		String output = runShellCommand(adbPath + " jdwp");
 
 		ArrayList<Integer> pids = new ArrayList<Integer>();
-		for (String s : output.split("\\s"))
+		for (String s : output.split("\\s")) {
 			pids.add(Integer.parseInt(s));
+		}
 
-			return pids;
+		return pids;
 	}
 
 

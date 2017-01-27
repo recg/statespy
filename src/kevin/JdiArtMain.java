@@ -106,12 +106,18 @@ public class JdiArtMain {
 			System.exit(-1);
 		}
 		
-		Utils.setAdbPath(adbPath); // shitty way to these, I know
+		Utils.setAdbPath(adbPath); // shitty way to do these, I know
 		Utils.addExclusions(exclusions);
 		
-		
-		ArrayList<Integer> pids = Utils.getJdwpPids();
-		int chosenPid = firstPid ? pids.get(0) : pids.get(pids.size() - 1);
+		int chosenPid = -1;
+		try {
+			ArrayList<Integer> pids = Utils.getJdwpPids();
+			chosenPid = firstPid ? pids.get(0) : pids.get(pids.size() - 1);
+		}
+		catch (NumberFormatException nfe) {
+			System.err.println("Couldn't parse list of JDWP-enabled PIDs. Make sure your device/emulator is connected.");
+			System.exit(-1);
+		}
 
 		Utils.forwardAdbPort(chosenTcpPort, chosenPid);
 		VirtualMachine vm = Utils.connectToDebuggeeJVM(chosenTcpPort);
