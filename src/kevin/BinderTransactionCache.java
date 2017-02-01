@@ -1,22 +1,14 @@
 package kevin;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 
 import com.sun.jdi.AbsentInformationException;
 import com.sun.jdi.Field;
 import com.sun.jdi.IntegerValue;
 import com.sun.jdi.LocalVariable;
 import com.sun.jdi.Method;
-import com.sun.jdi.ReferenceType;
 import com.sun.jdi.StackFrame;
-import com.sun.jdi.Type;
 import com.sun.jdi.Value;
 
 public class BinderTransactionCache {
@@ -74,8 +66,13 @@ public class BinderTransactionCache {
 		int binderCode = -1;
 		if (currentMethod.name().contains("onTransact")) {
 			try {
-				LocalVariable codeArg0 = currentMethod.arguments().get(0);
-				Value codeValue = stackFrame.getValue(codeArg0);
+//				List<LocalVariable> visiVars = stackFrame.visibleVariables();
+//				
+//				List<LocalVariable> args = currentMethod.arguments();
+//				List<Value> values = stackFrame.getArgumentValues();
+//				
+				LocalVariable codeVar = stackFrame.visibleVariableByName("code");
+				Value codeValue = stackFrame.getValue(codeVar);
 				if (codeValue instanceof IntegerValue) {
 					binderCode = ((IntegerValue) codeValue).value();
 				}

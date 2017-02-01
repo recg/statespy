@@ -221,13 +221,17 @@ public class BreakpointEventHandler extends Thread {
 				break;
 			}
 		}
-		if (mthdExit == null)
+		if (mthdExit == null) {
 			this.breakpoints.add(new BreakpointEntry(null, BreakpointType.EXIT, currentMethod));
+		}
 		
 		MethodExitRequest mer = this.vm.eventRequestManager().createMethodExitRequest();
 		mer.addThreadFilter(threadRef);
-		mer.addInstanceFilter(currentThis);
-		// could also add referencetype filter just for this class
+		mer.addClassFilter(currentMethod.declaringType());
+		if (this.vm.canUseInstanceFilters()) {
+			// probably unnecessary, but doesn't hurt to have extra filters to avoid stoppage at irrelevant methods
+			mer.addInstanceFilter(currentThis);
+		}
 		mer.setSuspendPolicy(BreakpointRequest.SUSPEND_ALL);
 		mer.enable();
 		writetoFile("Set EXIT breakpoint at method " + currentMethod.name());
@@ -294,7 +298,7 @@ public class BreakpointEventHandler extends Thread {
 			}
 		}
 		if (!isMethodOfInterest) {
-//			writetoFile("\n--> ignoring stoppage at method exit for don't care method " + evt.method().declaringType() + "." + evt.method().name());
+			writetoFile("\n--> ignoring stoppage at method exit for don't care method " + evt.method().declaringType() + "." + evt.method().name());
 			return;
 		}
 		
