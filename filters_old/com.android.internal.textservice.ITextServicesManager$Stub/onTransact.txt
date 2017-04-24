@@ -1,5 +1,0 @@
-mSpellCheckerMap
-mContext
-mSettings
-mSpellCheckerBindGroups
-mSystemReady

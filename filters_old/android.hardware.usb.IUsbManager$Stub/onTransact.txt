@@ -1,5 +1,0 @@
-mContext
-mSettingsByUser
-mDeviceManager
-mHostManager
-mPortManager
